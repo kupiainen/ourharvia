@@ -12,7 +12,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /session/create_session:
+ * /create_session:
  *   post:
  *     summary: Create a sauna session and update related group stats
  *     tags: [Sessions]
