@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.js";
 import session from "./routes/session.js";
 import users from "./routes/users.js";
 import groups from "./routes/groups.js";
+import challenges from "./routes/challenges.js";
 import { supabase } from "./config/supabase.js";
 import cors from "cors";
 import { swaggerDocs } from "./config/swagger.js";
@@ -18,6 +19,7 @@ app.use(cors())
 app.use("/users", users);
 app.use("/session", session);
 app.use("/groups", groups);
+app.use("/challenges", challenges);
 swaggerDocs(app);
 
 
