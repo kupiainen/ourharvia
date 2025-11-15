@@ -180,8 +180,8 @@ function RouteComponent() {
 								<span className="dial-mode">Mild</span>
 
 								<span className="dial-temp num-light">
-									140
-									<span className="dial-temp-unit num-regular">°F</span>
+									85
+									<span className="dial-temp-unit num-regular">°C</span>
 								</span>
 
 								<div className="dial-humidity">
