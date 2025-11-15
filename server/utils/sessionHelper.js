@@ -105,3 +105,79 @@ export async function fetchUserSessions(userId) {
   if (error) throw error;
   return data;
 }
+
+// Update user_stats after a session
+export async function updateUserStats(userId, sessionData) {
+  // Fetch existing user stats
+  const { data: statsData, error: fetchError } = await supabase
+    .from("user_stats")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
+
+  if (fetchError && fetchError.code !== "PGRST116") throw fetchError;
+
+  const {
+    duration_minutes,
+    average_temperature,
+    exp_gained
+  } = sessionData;
+
+  let updatedStats;
+
+  if (statsData) {
+    // Update cumulative stats
+    const totalSessions = (statsData.total_sessions || 0) + 1;
+    const totalTime = (statsData.total_time_minutes || 0) + duration_minutes;
+    const avgTemp = ((statsData.average_temperature * (totalSessions - 1)) + average_temperature) / totalSessions;
+    const userExp = (statsData.user_exp || 0) + exp_gained;
+
+    const { data, error } = await supabase
+      .from("user_stats")
+      .update({
+        total_sessions: totalSessions,
+        total_time_minutes: totalTime,
+        average_temperature: avgTemp,
+        user_exp: userExp,
+        last_session_date: new Date(),
+      })
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    updatedStats = data;
+
+  } else {
+    // Insert new user stats
+    const { data, error } = await supabase
+      .from("user_stats")
+      .insert({
+        user_id: userId,
+        total_sessions: 1,
+        total_time_minutes: duration_minutes,
+        average_temperature: average_temperature,
+        user_exp: exp_gained,
+        last_session_date: new Date(),
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    updatedStats = data;
+  }
+
+  return updatedStats;
+}
+
+// Fetch user stats
+export async function fetchUserStats(userId) {
+  const { data, error } = await supabase
+    .from("user_stats")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
