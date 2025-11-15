@@ -64,36 +64,61 @@ router.post("/create_session", async (req, res) => {
     const durationMinutes = Math.round((endTs - startTs) / 60000);
     const exp_gained = Math.round(durationMinutes / 5);
     // Insert into Supabase
-    const { data: inserted, error } = await supabase
-      .from("sauna_sessions")
-      .insert({
-        user_id: "4169d4ca-ca75-4122-8d9e-cd88de0721d2",
-        group_id: group_id ?? null,
-        session_start: startTs.toISOString(),
-        session_end: endTs.toISOString(),
-        duration_minutes: durationMinutes,
-        average_temperature: avgTemp,
-        peak_temperature: peakTemp,
-        humidity_percent: avgHum,
-        exp_gained: exp_gained,
-      })
-      .select()
+    const { data: group, error } = await supabase
+      .from("groups")
+      .select("*")
+      .eq("creator_id", "4169d4ca-ca75-4122-8d9e-cd88de0721d2")
       .single();
+    if (group) {
+      const { data: groupMembers } = await supabase
+        .from("group_members")
+        .select("*")
+        .eq("group_id", "b522524a-b36d-4e22-837f-bd02b9405379")
+      const number_members = groupMembers.length;
+      console.log("NUMBER MEMBERS:", number_members);
+      if (group) {
+        const { data: inserted_person_sauna, error } = await supabase
+          .from("sauna_sessions")
+          .insert({
+            user_id: "4169d4ca-ca75-4122-8d9e-cd88de0721d2",
+            group_id: group_id ?? null,
+            session_start: startTs.toISOString(),
+            session_end: endTs.toISOString(),
+            duration_minutes: durationMinutes,
+            average_temperature: avgTemp,
+            peak_temperature: peakTemp,
+            humidity_percent: avgHum,
+            exp_gained: exp_gained,
+          })
+          .select()
+          .single();
+        if (inserted_person_sauna) {
+          console.log(group);
+          const { data: inserted, error } = await supabase
+            .from("group_stats")
+            .insert({
+              group_id: group.id,
+              total_sessions: 1,
+              total_members: number_members,
+              average_group_temperature: avgTemp,
+              total_group_time_minutes: durationMinutes,
+            })
+            .select()
+            .single();
+            console.log("INSERTED GROUP STATS:", inserted);
+          if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Failed to create group stats in Supabase" });
+          }
+          return res.json({ session: inserted });
+        }
+      }
+    }
 
     if (error) {
       console.error(error);
       return res.status(500).json({ error: "Failed to insert into Supabase" });
     }
-
-    return res.json({
-      session: inserted,
-      averages: {
-        avgTemp,
-        avgHum,
-        peakTemp,
-        durationMinutes,
-      }
-    });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
