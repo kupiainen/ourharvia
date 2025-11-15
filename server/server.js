@@ -1,7 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
-import users from "./routes/session.js";
+import session from "./routes/session.js";
+import users from "./routes/users.js";
 import groups from "./routes/groups.js";
 import { supabase } from "./config/supabase.js";
 import cors from "cors";
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(cors())
 // app.use("/auth", authRoutes);
 app.use("/users", users);
+app.use("/session", session);
 app.use("/groups", groups);
 swaggerDocs(app);
 
