@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ScoreboardRouteImport } from './routes/scoreboard'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ScoreboardRoute = ScoreboardRouteImport.update({
+  id: '/scoreboard',
+  path: '/scoreboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/profile': typeof ProfileRoute
+  '/scoreboard': typeof ScoreboardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/profile': typeof ProfileRoute
+  '/scoreboard': typeof ScoreboardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/profile': typeof ProfileRoute
+  '/scoreboard': typeof ScoreboardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/profile'
+  fullPaths: '/' | '/dashboard' | '/profile' | '/scoreboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/profile'
-  id: '__root__' | '/' | '/dashboard' | '/profile'
+  to: '/' | '/dashboard' | '/profile' | '/scoreboard'
+  id: '__root__' | '/' | '/dashboard' | '/profile' | '/scoreboard'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   ProfileRoute: typeof ProfileRoute
+  ScoreboardRoute: typeof ScoreboardRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/scoreboard': {
+      id: '/scoreboard'
+      path: '/scoreboard'
+      fullPath: '/scoreboard'
+      preLoaderRoute: typeof ScoreboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   ProfileRoute: ProfileRoute,
+  ScoreboardRoute: ScoreboardRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

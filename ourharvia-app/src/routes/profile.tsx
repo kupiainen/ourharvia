@@ -183,7 +183,7 @@ const progressToNextLevel =
       <div className="max-w-md mx-auto pb-8">
         {/* SECTION 1: User Identity */}
         {/* TOP BANNER */}
-        <div className="relative w-full h-40 rounded-b-3xl overflow-hidden">
+        <div className="relative w-full h-40 rounded-b-3xl overflow-hidden" style={{opacity:"0.6"}}>
         <img
             src={saunaImage}
             alt="Profile banner"
