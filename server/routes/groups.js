@@ -81,7 +81,7 @@ export default router;
 
 /**
  * @swagger
- * /groups/create_group:
+ * /create_group:
  *   post:
  *     summary: Create a new group
  *     tags: [Groups]
@@ -120,7 +120,7 @@ export default router;
 
 /**
  * @swagger
- * /groups/create_members:
+ * /create_members:
  *   post:
  *     summary: Add a member to a group
  *     tags: [Groups]
