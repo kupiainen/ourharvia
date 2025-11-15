@@ -4,13 +4,34 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+    font-family: "Korb";
+    src: url("/fonts/Korb.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: "Astrid Grotesk Light";
+    src: url("/fonts/astridgrotesk-light.otf") format("opentype");
+    font-style: normal;
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: "Astrid Grotesk Regular";
+    src: url("/fonts/astridgrotesk-regular.otf") format("opentype");
+    font-style: normal;
+    font-weight: 400;
+}
+
 body {
   @apply m-0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: "Korb", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 code {
@@ -19,6 +40,8 @@ code {
 }
 
 :root {
+  --number-font-light: "Astrid Grotesk Light", sans-serif;
+  --number-font-regular: "Astrid Grotesk Regular", sans-serif;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -144,4 +167,16 @@ code {
 
 .animate-scaleIn {
   animation: scaleIn 0.2s ease-out;
+}
+@layer utilities {
+  .max-w-mobile {
+    max-width: 390px;
+  }
+  .num-light {
+    font-family: var(--number-font-light);
+    letter-spacing: 0.034em;
+  }
+  .num-regular {
+    font-family: var(--number-font-regular);
+  }
 }
