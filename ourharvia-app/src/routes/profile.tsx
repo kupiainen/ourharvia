@@ -3,6 +3,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ChevronLeft, Settings, Flame, Star, Users, Calendar, Heart, Lock, AlertCircle, Zap, Trophy, Target, TrendingUp, Award, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
+import saunaImage from '../images/sauna1.jpg'
 
 export const Route = createFileRoute('/profile')({
   component: ProfilePage,
@@ -179,75 +180,125 @@ const progressToNextLevel =
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#050507' }}>
-      {/* Top app bar */}
-      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3" style={{ backgroundColor: 'rgba(8, 9, 11, 0.95)' }}>
-        <ChevronLeft className="w-6 h-6" style={{ color: '#ffffff' }} />
-        <h1 className="text-lg font-semibold" style={{ color: '#ffffff' }}>
-          Profile
-        </h1>
-        <Settings className="w-6 h-6" style={{ color: '#ffffff' }} />
-      </div>
-
       <div className="max-w-md mx-auto pb-8">
         {/* SECTION 1: User Identity */}
-{/* TOP BANNER */}
-<div className="relative w-full h-40 rounded-b-3xl overflow-hidden">
-  <img
-    src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1200"
-    alt="Profile banner"
-    className="w-full h-full object-cover opacity-80"
-  />
-</div>
+        {/* TOP BANNER */}
+        <div className="relative w-full h-40 rounded-b-3xl overflow-hidden">
+        <img
+            src={saunaImage}
+            alt="Profile banner"
+            className="w-full h-full object-cover opacity-80"
+        />
+        </div>
 
-{/* PROFILE PICTURE + NAME + BUTTONS */}
-<div className="px-4 relative -mt-12 text-center">
-  {/* Avatar */}
-  <div className="w-24 h-24 rounded-full mx-auto border-4 border-[#050507] overflow-hidden shadow-lg">
-    <img
-      src="https://i.pravatar.cc/300?img=12"
-      alt="User Profile"
-      className="w-full h-full object-cover"
-    />
-  </div>
+        {/* PROFILE PICTURE + NAME + BUTTONS */}
+        <div className="px-4 relative -mt-12 text-center">
+        {/* Avatar */}
+        <div className="w-24 h-24 rounded-full mx-auto border-4 border-[#050507] overflow-hidden shadow-lg">
+            <img
+            src="https://i.pravatar.cc/300?img=12"
+            alt="User Profile"
+            className="w-full h-full object-cover"
+            />
+        </div>
 
-  {/* Name */}
-  <p className="font-semibold text-white mt-3 text-xl">{user.name}</p>
-  <p className="text-xs mt-1" style={{ color: '#999999' }}>
-    {user.location}
-  </p>
+        {/* Name */}
+        <p className="font-semibold text-white mt-3 text-xl">{user.name}</p>
+        <p className="text-xs mt-1" style={{ color: '#999999' }}>
+            {user.location}
+        </p>
 
-  {/* BUTTON ROW */}
-  <div className="flex justify-center gap-4 mt-4">
-    {/* Sauna settings */}
-    <button
-      onClick={() => {
-        setShowPrefs(true)
-        document.getElementById('sauna-settings')?.scrollIntoView({ behavior: 'smooth' })
-      }}
-      className="px-4 py-2 rounded-xl text-sm font-medium"
-      style={{
-        backgroundColor: '#1a1a1d',
-        border: '1px solid rgba(255,255,255,0.15)',
-        color: '#ffffff',
-      }}
-    >
-      Sauna Settings
-    </button>
+        {/* SECTION: User Level + XP Progress */}
+        <div className="mx-4 mt-8" style={{marginTop: "0em"}}>
+        <div
+            className="p-4 rounded-xl">
+            {/* Top row: Level / Sessions / XP */}
+            <div className="flex justify-between items-center mb-4">
+            <div className="text-center flex-1">
+                <p className="text-[10px] uppercase" style={{ color: '#999' }}>Level</p>
+                <p className="text-xl font-bold text-white mt-1">{level}</p>
+            </div>
 
-    {/* Edit Profile */}
-    <button
-      onClick={() => setEditProfileModal(true)}
-      className="px-4 py-2 rounded-xl text-sm font-medium"
-      style={{
-        backgroundColor: '#c8102e',
-        color: 'white',
-      }}
-    >
-      Edit Profile
-    </button>
-  </div>
-</div>
+            <div
+                style={{
+                width: '1px',
+                height: '40px',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                }}
+            />
 
+            <div className="text-center flex-1">
+                <p className="text-[10px] uppercase" style={{ color: '#999' }}>Sessions</p>
+                <p className="text-xl font-bold text-white mt-1">{user.sessions}</p>
+            </div>
+
+            <div
+                style={{
+                width: '1px',
+                height: '40px',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                }}
+            />
+
+            <div className="text-center flex-1">
+                <p className="text-[10px] uppercase" style={{ color: '#999' }}>XP</p>
+                <p className="text-xl font-bold text-white mt-1">{user.xp}</p>
+            </div>
+            </div>
+
+            {/* XP Progress Bar */}
+            <div className="mt-3">
+            <div
+                className="h-2 w-full rounded-full overflow-hidden"
+                style={{ backgroundColor: '#2a2a2d' }}
+            >
+                <div
+                className="h-full rounded-full transition-all"
+                style={{
+                    width: `${progressToNextLevel}%`,
+                    backgroundColor: '#c8102e',
+                }}
+                />
+            </div>
+
+            <p
+                className="text-[10px] text-right mt-1"
+                style={{ color: '#777' }}
+            >
+                {nextLevelXP - (user.xp)} XP to level {level + 1}
+            </p>
+            </div>
+        </div>
+        </div>
+
+            {/* BUTTON ROW */}
+            <div className="flex justify-center gap-4 mt-4">
+
+            <button
+            onClick={() => setShowPrefsModal(true)}
+            className="px-4 py-2 rounded-xl text-sm font-medium"
+            style={{
+                backgroundColor: '#1a1a1d',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: '#ffffff',
+            }}
+            >
+            Sauna Settings
+            </button>
+
+            {/* Edit Profile */}
+            <button
+                onClick={() => setEditProfileModal(true)}
+                className="px-4 py-2 rounded-xl text-sm font-medium"
+                style={{
+                backgroundColor: '#c8102e',
+                color: 'white',
+                }}
+            >
+                Edit Profile
+            </button>
+            </div>
+        </div>
 
         {/* SECTION 2: Achievements */}
         <div className="mx-4 mt-10">
@@ -584,83 +635,6 @@ const progressToNextLevel =
               </div>
             ))}
           </div>
-        </div>
-
-        {/* SECTION 5: Sauna Settings (Collapsible + Modal edit) */}
-        <div className="mx-4 mt-10">
-        <button
-            onClick={() => setShowPrefs(!showPrefs)}
-            className="w-full flex items-center justify-between px-4 py-3 rounded-xl"
-            style={{ backgroundColor: '#1a1a1d', border: '1px solid rgba(255,255,255,0.05)' }}
-        >
-            <span className="text-white font-medium text-sm">Sauna Settings</span>
-            <div className="flex items-center gap-2">
-            <button
-                onClick={(e) => {
-                e.stopPropagation()
-                setShowPrefsModal(true)
-                }}
-                className="text-xs px-2 py-1 rounded"
-                style={{ backgroundColor: 'rgba(200,16,46,0.15)', color: '#c8102e' }}
-            >
-                Edit
-            </button>
-
-            <ChevronDown
-                className="w-4 h-4 text-white transition-transform"
-                style={{ transform: showPrefs ? 'rotate(180deg)' : 'rotate(0deg)' }}
-            />
-            </div>
-        </button>
-
-        {/* Collapsible content */}
-        <div
-            className="overflow-hidden transition-all duration-300"
-            style={{ maxHeight: showPrefs ? '200px' : '0' }}
-        >
-            <div
-            className="mt-3 p-4 rounded-xl space-y-3"
-            style={{ backgroundColor: '#1a1a1d', border: '1px solid rgba(255,255,255,0.05)' }}
-            >
-            <div className="flex justify-between">
-                <span className="text-xs" style={{ color: '#999' }}>Preferred Temp</span>
-                <span className="text-sm text-white">{preferences.temperature}</span>
-            </div>
-            <div className="flex justify-between">
-                <span className="text-xs" style={{ color: '#999' }}>Session Length</span>
-                <span className="text-sm text-white">{preferences.sessionLength}</span>
-            </div>
-            </div>
-        </div>
-        </div>
-
-
-        {/* SECTION 6: Actions */}
-        <div className="mx-4 mt-10 pb-4 space-y-3">
-          <button
-            className="w-full py-3 rounded-lg font-medium transition-colors"
-            style={{
-              backgroundColor: 'transparent',
-              color: '#c8102e',
-              border: '1px solid #c8102e',
-            }}
-          >
-            Edit profile
-          </button>
-
-          <button
-            className="w-full py-2 text-sm transition-colors"
-            style={{ color: '#999999' }}
-          >
-            Manage connected devices
-          </button>
-
-          <button
-            className="w-full py-2 text-sm transition-colors"
-            style={{ color: '#999999' }}
-          >
-            Privacy & data
-          </button>
         </div>
       </div>
       
