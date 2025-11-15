@@ -143,3 +143,34 @@ router.get("/get_sessions", async (req, res) => {
   }
 });
 export default router;
+/**
+ * @openapi
+ * /session:
+ *   post:
+ *     summary: Create a sauna session
+ *     tags:
+ *       - Sessions
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               from:
+ *                 type: string
+ *                 example: "2025-11-12T17:44:57.112Z"
+ *               to:
+ *                 type: string
+ *                 example: "2025-11-12T17:51:03.123Z"
+ *               user_id:
+ *                 type: string
+ *               group_id:
+ *                 type: string
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: Sauna session created
+ *       400:
+ *         description: Missing fields
+ */
