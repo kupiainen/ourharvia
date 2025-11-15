@@ -22,7 +22,7 @@ export function Header() {
 				</Button>
 
 				{/* Center: Split Home + Sauna Dropdown */}
-				<div className="flex items-center">
+				<div className="flex items-center ml-6">
 					{/* Home button */}
 					<Link to="/dashboard">
 						<Button

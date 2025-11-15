@@ -64,7 +64,7 @@ export function DraggableSlider({ onUnlock, onLock }: DraggableSliderProps) {
 	};
 
 	return (
-		<footer className="flex justify-center items-center w-full p-6 fixed bottom-8">
+		<footer className="flex justify-center items-center w-full mt-12">
 			<div
 				className="relative flex items-center rounded-full p-0"
 				style={{
