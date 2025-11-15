@@ -41,7 +41,7 @@ router.post("/login", async (req, res) => {
     const { error: validateError } = loginSchema.validate(req.body);
     if (validateError) return res.status(400).json({ error: validateError.message });
 
-    const { email, password } = req.body;
+    const { email, password, username, full } = req.body;
 
     const { data: user, error } = await supabase
       .from("profiles")
