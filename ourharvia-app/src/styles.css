@@ -167,6 +167,7 @@ code {
 
 .animate-scaleIn {
   animation: scaleIn 0.2s ease-out;
+}
 @layer utilities {
   .max-w-mobile {
     max-width: 390px;
@@ -178,5 +179,4 @@ code {
   .num-regular {
     font-family: var(--number-font-regular);
   }
-}
 }

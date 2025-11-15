@@ -1,0 +1,484 @@
+/* Root: full screen, no scroll, centered mobile width */
+.dashboard-root {
+    height: 100vh;
+    max-height: 100vh;
+    width: 100%;
+    background: #000;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  /* Use dynamic viewport when supported (mobile safe) */
+  @supports (height: 100dvh) {
+    .dashboard-root {
+      height: 100dvh;
+      max-height: 100dvh;
+    }
+  }
+  
+  .dashboard-inner {
+    width: 100%;
+    max-width: 430px; /* similar to your max-w-mobile */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Main layout: fill height, space sections vertically */
+  .dashboard-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 24px;
+    box-sizing: border-box;
+  }
+  
+  /* Dial row (chevrons + circle) */
+  .dial-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 8px;
+    margin-top: 10%;
+  }
+  
+  .chevron-button {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 8px;
+    border-radius: 9999px;
+    cursor: pointer;
+  }
+  
+  .chevron-button:hover {
+    color: #ffffff
+  }
+  
+  /* Dial outer gradient ring */
+  .dial-outer {
+    width: 256px;
+    height: 256px;
+    border-radius: 9999px;
+    padding: 4px;
+    background: linear-gradient(135deg, #7c2d12, #b91c1c, #ca8a04);
+    box-shadow: 0 0 60px 10px rgba(239, 68, 68, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  /* Inner circle */
+  .dial-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+/* Sauna background image inside the dial */
+.sauna-background {
+    position: absolute !important;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    filter: brightness(0.48) saturate(1.1) blur(2px);
+  }
+  
+  /* Add a subtle radial vignette so center is brighter */
+  .dial-inner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle at center,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.45) 60%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+    z-index: 1; /* above image, below text */
+    pointer-events: none;
+  }
+  
+  /* Make sure text sits above everything */
+  .dial-inner > * {
+    position: relative;
+    z-index: 2;
+  }
+  
+  
+  .dial-mode {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  
+  .dial-temp {
+    font-size: 32px;
+    font-weight: 300;
+  }
+  
+  .dial-temp-unit {
+    font-size: 18px;
+    vertical-align: super;
+    margin-left: 2px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+  }
+  
+  .dial-humidity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 8px;
+  }
+  
+  .dial-humidity-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .dial-time {
+    margin-top: 4px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Middle block: dots + controls */
+  .middle-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 1em;
+  }
+  
+  /* Dots */
+  .dot-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .dot--active {
+    background: #ffffff;
+  }
+  
+  /* Fan / Mic / Light row */
+  .controls-row {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .icon-button {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 9999px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .icon-button:hover {
+    color: #e58b0d;
+  }
+  
+  .icon-svg {
+    width: 28px;
+    height: 28px;
+  }
+  
+  /* Bottom block: status + slider */
+  .bottom-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+    margin-top: 3em;
+  }
+  
+  /* Status text */
+  .status-text {
+    text-align: center;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+    margin-bottom: 1em;
+  }
+  
+  .status-text span {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 24px;
+    color: #ffffff;
+    font-weight: 500;
+  }
+  
+  /* Slide to start */
+  .slider-shell {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .slider {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    height: 64px;
+    background: #262626;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 2px solid #ffffff;
+  }
+  
+  /* Slider active (session ON) */
+  .slider.slider-active {
+    border-color: #e58b0d;
+    box-shadow: 0 0 18px rgba(229, 139, 13, 0.45);
+  }
+  
+  
+  .slider-handle {
+    width: 48px;
+    height: 48px;
+    border-radius: 9999px;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  .slider-icon {
+    width: 28px;
+    height: 28px;
+    color: #ffffff;
+  }
+  
+  .slider-text {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #a3a3a3;
+    font-size: 14px;
+  }
+  
+/* Slide to start text block */
+.slider-text-block {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -45%);
+    text-align: center;
+    pointer-events: none;
+    left: 50%;
+    top: 45%;
+  }
+  
+  .slider-text {
+    width: 10em;
+    color: #b3b3b3;
+    font-size: 14px;
+    margin-bottom: 1em;
+  }
+  
+  /* Arrow: orange, gradient fade, animated */
+  .slider-arrow {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    background: linear-gradient(to right, rgba(255,140,0,0.2), #ff8c00);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: alternate ease-in-out;
+    margin-top: 0.5em;
+  }
+  
+  @keyframes arrowFade {
+    from {
+      opacity: 0.3;
+      transform: translateX(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(4px);
+    }
+  }
+  
+  .slider-handle {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: grab;
+  }
+  
+  .slider-handle:active {
+    cursor: grabbing;
+  }
+  
+/* When slider is activated */
+.slider-handle.activated {
+    border-color: #e58b0d !important;
+    background: #e58b0d !important; /* solid orange bubble */
+  }
+  
+  /* Icon stays white when active */
+  .slider-handle.activated .slider-icon {
+    color: #ffffff !important;
+  }
+  
+  
+/* Default arrow gradient → */
+.slider-arrow {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    background: linear-gradient(to right, rgba(255,140,0,0.2), #ff8c00);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: arrowFade 0.9s alternate ease-in-out;
+  }
+  
+  /* Reverse arrow gradient ← */
+  .slider-arrow.reverse {
+    background: linear-gradient(to left, rgba(255,140,0,0.2), #ff8c00);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: arrowFade 0.9s alternate ease-in-out;
+  }
+ 
+/* Smooth magnetic snapping */
+.slider-handle.snap {
+    transition: left 0.35s cubic-bezier(0.25, 1.4, 0.3, 1); /* elastic pop */
+  }
+  
+/* Siri */
+
+/* Make main relative so overlay centers correctly */
+.dashboard-main {
+    position: relative;
+  }
+  
+  /* Voice overlay container */
+  .voice-overlay {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none; /* visual-only, doesn't block slider / buttons */
+    z-index: 5;
+  }
+  
+  /* Outer glowing orb */
+  .voice-orb {
+    width: 140px;
+    height: 140px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 30% 20%, #ffffff33, transparent 55%),
+      radial-gradient(circle at 80% 80%, #e58b0d55, transparent 60%),
+      radial-gradient(circle at 50% 50%, #7c2d12, #b91c1c 55%, #e58b0d 100%);
+    box-shadow:
+      0 0 25px rgba(229, 139, 13, 0.55),
+      0 0 70px rgba(185, 28, 28, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: voice-orb-pulse 1.8s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Inner breathing ring */
+  .voice-orb-inner {
+    width: 70%;
+    height: 70%;
+    border-radius: 9999px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow:
+      0 0 12px rgba(255, 255, 255, 0.35),
+      inset 0 0 18px rgba(0, 0, 0, 0.7);
+    animation: voice-orb-inner-pulse 1.8s ease-in-out infinite;
+  }
+  
+  /* Listening text */
+  .voice-text {
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Pulse animation for orb */
+  @keyframes voice-orb-pulse {
+    0% {
+      transform: scale(0.96);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.06);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(0.96);
+      opacity: 0.8;
+    }
+  }
+  
+  /* Inner ring breathing effect */
+  @keyframes voice-orb-inner-pulse {
+    0% {
+      transform: scale(0.95);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+    50% {
+      transform: scale(1.05);
+      border-color: rgba(255, 255, 255, 0.85);
+    }
+    100% {
+      transform: scale(0.95);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+  }
+  
+  /* Mic button active state */
+  .mic-button--active {
+    color: #e58b0d !important;
+  }
+  
+  .mic-button--active .icon-svg {
+    filter: drop-shadow(0 0 8px rgba(229, 139, 13, 0.8));
+  }
+  
