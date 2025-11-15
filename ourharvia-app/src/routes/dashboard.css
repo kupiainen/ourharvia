@@ -1,3 +1,10 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* This hides the scrollbar */
+}
+
 /* Root: full screen, no scroll, centered mobile width */
 .dashboard-root {
     height: 100vh;
@@ -42,7 +49,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    gap: 8px;
+    gap: 0px;
     margin-top: 10%;
   }
   
@@ -61,8 +68,11 @@
   
   /* Dial outer gradient ring */
   .dial-outer {
-    width: 256px;
-    height: 256px;
+
+    width: 100%;
+    min-width: 150px;
+    max-width: 256px;
+    aspect-ratio: 1 / 1;
     border-radius: 9999px;
     padding: 4px;
     background: linear-gradient(135deg, #7c2d12, #b91c1c, #ca8a04);
@@ -124,6 +134,7 @@
   .dial-mode {
     font-size: 20px;
     margin-bottom: 4px;
+    letter-spacing: 0.034em;
   }
   
   .dial-temp {
@@ -204,6 +215,7 @@
   
   .icon-button:hover {
     color: #e58b0d;
+    cursor: pointer;
   }
   
   .icon-svg {

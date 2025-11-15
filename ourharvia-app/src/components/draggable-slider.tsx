@@ -1,4 +1,4 @@
-import { animate, motion, useMotionValue, useTransform } from "framer-motion"; // <-- ADD THIS LINE
+import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import { Power } from "lucide-react"; // Assuming you use lucide-react for the icon
 import { useState } from "react";
 
@@ -31,6 +31,11 @@ export function DraggableSlider({ onUnlock, onLock }: DraggableSliderProps) {
 	// As x goes from (MAX_DRAG / 2) to MAX_DRAG, opacity goes from 0 to 1
 	const stopTextOpacity = useTransform(x, [MAX_DRAG / 2, MAX_DRAG], [0, 1]);
 
+	const handleDragStart = () => {
+		// Stop any ongoing animation so drag is responsive
+		x.stop();
+	};
+
 	// Handle the end of a drag gesture
 	const handleDragEnd = () => {
 		if (unlocked) {
@@ -59,14 +64,13 @@ export function DraggableSlider({ onUnlock, onLock }: DraggableSliderProps) {
 	};
 
 	return (
-		<footer className="flex justify-center items-center w-full p-6 relative bottom-8">
+		<footer className="flex justify-center items-center w-full p-6 fixed bottom-8">
 			<div
-				className="relative flex items-center rounded-full h-14" // <-- Removed p-2, set h-14
+				className="relative flex items-center rounded-full p-0"
 				style={{
 					width: `${SLIDER_WIDTH}px`,
 					// height: `${KNOB_SIZE + 2 * PADDING}px`, // <-- REMOVED
-					// Show a green background when unlocked
-					border: unlocked ? "2px solid #e3a92b" : "2px solid white",
+					border: unlocked ? "2px solid #e58b0d" : "2px solid white",
 					backgroundColor: unlocked ? "#000000" : "#000000", // bg-green-500 or bg-neutral-800
 					transition: "background-color 0.5s ease",
 				}}
@@ -76,14 +80,15 @@ export function DraggableSlider({ onUnlock, onLock }: DraggableSliderProps) {
 					className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center m-1" // <-- Added m-1
 					style={{
 						x, // Bind the knob's x position to the motion value
-						border: unlocked ? "2px solid #e3a92b" : "2px solid white",
-						backgroundColor: unlocked ? "#e3a92b" : "transparent",
+						border: unlocked ? "2px solid #e58b0d" : "2px solid white",
+						backgroundColor: unlocked ? "#e58b0d" : "transparent",
 						transition: "border-color 0.5s ease, background-color 0.5s ease",
 					}}
 					drag="x" // Allow dragging only on the x-axis
 					dragConstraints={{ left: 0, right: MAX_DRAG }} // Constrain dragging
 					dragMomentum={false} // Disable momentum
-					dragElastic={0} // <-- ADD THIS LINE to make the constraint a hard wall
+					dragElastic={0}
+					onDragStart={handleDragStart}
 					onDragEnd={handleDragEnd} // Call handler on drag end
 				>
 					<Power
@@ -96,7 +101,7 @@ export function DraggableSlider({ onUnlock, onLock }: DraggableSliderProps) {
 				<motion.span
 					className="absolute left-1/2 -translate-x-1/2 text-neutral-400 pointer-events-none"
 					style={{
-						color: unlocked ? "#e3a92b" : "white", // conditional color
+						color: unlocked ? "#e58b0d" : "white", // conditional color
 
 						opacity: unlocked ? 0 : textOpacity,
 					}}
@@ -105,7 +110,7 @@ export function DraggableSlider({ onUnlock, onLock }: DraggableSliderProps) {
 					<span
 						className="font-sans ml-1"
 						style={{
-							color: unlocked ? "#e3a92b" : "white", // conditional color
+							color: unlocked ? "#e58b0d" : "#e58b0d", // conditional color
 						}}
 					>
 						&rarr;
@@ -116,7 +121,7 @@ export function DraggableSlider({ onUnlock, onLock }: DraggableSliderProps) {
 				<motion.span
 					className="absolute left-1/2 -translate-x-1/2 text-neutral-400 pointer-events-none"
 					style={{
-						color: unlocked ? "#white" : "white", // conditional color
+						color: unlocked ? "white" : "white", // conditional color
 
 						opacity: unlocked ? stopTextOpacity : 0,
 					}}
@@ -124,7 +129,7 @@ export function DraggableSlider({ onUnlock, onLock }: DraggableSliderProps) {
 					<span
 						className="font-sans mr-1"
 						style={{
-							color: unlocked ? "#e3a92b" : "white", // conditional color
+							color: unlocked ? "#e58b0d" : "#e58b0d", // conditional color
 						}}
 					>
 						&larr;
