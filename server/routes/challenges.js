@@ -4,6 +4,55 @@ import { supabase } from "../config/supabase.js";
 import { activateChallengeBodySchema, activateChallengeParamsSchema } from "../validators/challenges.js";
 const router = express.Router();
 
+/**
+ * @swagger
+ * /challenges:
+ *   get:
+ *     summary: Fetch all challenges with optional filtering by type
+ *     tags: [Challenges]
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [all, personal, group, community]
+ *         description: Filter challenges by type. Defaults to "all".
+ *     responses:
+ *       200:
+ *         description: List of challenges returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 type:
+ *                   type: string
+ *                   example: "all"
+ *                 count:
+ *                   type: integer
+ *                   example: 3
+ *                 challenges:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     example:
+ *                       id: "7a8e4f1b-6f10-4ee3-8b7c-1df8b1c8b3a1"
+ *                       title: "7-Day Sauna Streak"
+ *                       description: "Do sauna 7 days in a row"
+ *                       challenge_type: "personal"
+ *                       target_sessions: 7
+ *                       target_duration_minutes: null
+ *                       target_temperature: null
+ *                       start_date: "2025-01-01T00:00:00Z"
+ *                       end_date: "2025-01-08T00:00:00Z"
+ *                       reward_points: 100
+ *                       difficulty_level: "medium"
+ *       500:
+ *         description: Server error while fetching challenges
+ */
+
+
 router.get("/", async (req, res) => {
   try {
     const { type = "all" } = req.query;
@@ -32,6 +81,94 @@ router.get("/", async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 })
+
+
+/**
+ * @swagger
+ * /challenges/{challengeId}/activate:
+ *   post:
+ *     summary: Activate a challenge for the authenticated user
+ *     tags: [Challenges]
+ *     parameters:
+ *       - in: path
+ *         name: challengeId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID of the challenge to activate
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Currently empty, reserved for future fields
+ *             example: {}
+ *     responses:
+ *       200:
+ *         description: Challenge activated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 challengeId:
+ *                   type: string
+ *                   format: uuid
+ *                   example: "7a8e4f1b-6f10-4ee3-8b7c-1df8b1c8b3a1"
+ *                 activated:
+ *                   type: boolean
+ *                   example: true
+ *                 group_id:
+ *                   type: string
+ *                   format: uuid
+ *                   nullable: true
+ *                   example: null
+ *                 progress:
+ *                   type: object
+ *                   example:
+ *                     id: "c2f7e8d5-0a0b-45e0-bf33-8a1a8d9c3eaa"
+ *                     user_id: "4169d4ca-ca75-4122-8d9e-cd88de0721d2"
+ *                     challenge_id: "7a8e4f1b-6f10-4ee3-8b7c-1df8b1c8b3a1"
+ *                     is_activated: true
+ *                     group_id: null
+ *                     joined_date: "2025-11-16T12:00:00.000Z"
+ *                     updated_at: "2025-11-16T12:00:00.000Z"
+ *                     sessions_completed: 0
+ *                     completion_percent: 0
+ *       400:
+ *         description: Invalid params or challenge requires user to be in a group
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 error: "INVALID_PARAMS"
+ *                 message: "\"challengeId\" must be a valid UUID"
+ *       404:
+ *         description: Challenge not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 error: "NOT_FOUND"
+ *                 message: "Challenge does not exist."
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 error: "DB_ERROR"
+ *                 message: "Database query failed"
+ */
+
 
 router.post("/:challengeId/activate", async (req, res) => {
   // Validate params
