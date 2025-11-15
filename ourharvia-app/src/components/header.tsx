@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 
 export function Header() {
 	return (
-		<header className="max-w-mobile mx-auto bg-black flex justify-between items-center w-full px-4 py-4">
+		<header className="mx-auto bg-black flex justify-between items-center w-full px-4 py-4">
 			{/* Left: Hamburger */}
 			<Button
 				variant="ghost"
