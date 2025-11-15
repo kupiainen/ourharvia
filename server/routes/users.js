@@ -1,5 +1,5 @@
 import express from "express";
-import { getTelemetryStats, insertSaunaSession, updateGroupStats, fetchUserSessions, fetchUserStats, updateUserStats } from "../utils/sessionHelper.js";
+import {fetchUserStats, updateUserStats } from "../utils/sessionHelper.js";
 const router = express.Router();
 /**
  * @swagger

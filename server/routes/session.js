@@ -1,5 +1,5 @@
 import express from "express";
-import { getTelemetryStats, insertSaunaSession, updateGroupStats, fetchUserSessions,fetchUserStats,updateUserStats } from "../utils/sessionHelper.js";
+import { getTelemetryStats, insertSaunaSession, updateGroupStats, fetchUserSessions, fetchUserStats, updateUserStats } from "../utils/sessionHelper.js";
 
 const router = express.Router();
 
@@ -68,24 +68,29 @@ const router = express.Router();
 router.post("/create_session", async (req, res) => {
   try {
     const { from, to, group_id } = req.body;
-    if (!from || !to) return res.status(400).json({ error: "'from' and 'to' are required" });
-
     const startTs = new Date(from);
     const endTs = new Date(to);
     const durationMinutes = Math.round((endTs - startTs) / 60000);
     const expGained = Math.round(durationMinutes / 5);
 
     const { avgTemp, avgHum, peakTemp } = await getTelemetryStats(from, to);
+    const userId = "4169d4ca-ca75-4122-8d9e-cd88de0721d2"; // example
 
-    const userId = "4169d4ca-ca75-4122-8d9e-cd88de0721d2"; // hardcoded for now
-
-    const session = await insertSaunaSession(userId, group_id, startTs, endTs, durationMinutes, avgTemp, peakTemp, avgHum, expGained);
+    const session = await insertSaunaSession(
+      userId, group_id, startTs, endTs, durationMinutes, avgTemp, peakTemp, avgHum, expGained
+    );
 
     if (group_id) await updateGroupStats(group_id, avgTemp, durationMinutes);
 
-    res.json({ session });
+    // **Update cumulative user stats directly**
+    const updatedStats = await updateUserStats(userId, {
+      duration_minutes: durationMinutes,
+      average_temperature: avgTemp,
+      exp_gained: expGained
+    });
+
+    res.json({updatedStats });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
