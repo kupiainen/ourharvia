@@ -72,3 +72,90 @@ router.post("/create_members", async (req, res) => {
 });
 
 export default router;
+/**
+ * @swagger
+ * tags:
+ *   name: Groups
+ *   description: Group creation and management
+ */
+
+/**
+ * @swagger
+ * /groups/create_group:
+ *   post:
+ *     summary: Create a new group
+ *     tags: [Groups]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - group_name
+ *             properties:
+ *               group_name:
+ *                 type: string
+ *                 example: "My Sauna Group"
+ *     responses:
+ *       200:
+ *         description: Group successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 group:
+ *                   type: object
+ *                   example:
+ *                     id: "b522524a-b36d-4e22-837f-bd02b9405379"
+ *                     creator_id: "4169d4ca-ca75-4122-8d9e-cd88de0721d2"
+ *                     name: "My Sauna Group"
+ *                     created_at: "2025-11-15T19:04:47.744Z"
+ *       400:
+ *         description: Missing group_name parameter
+ *       500:
+ *         description: Error creating the group
+ */
+
+/**
+ * @swagger
+ * /groups/create_members:
+ *   post:
+ *     summary: Add a member to a group
+ *     tags: [Groups]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               group_id:
+ *                 type: string
+ *                 example: "b522524a-b36d-4e22-837f-bd02b9405379"
+ *               user_id:
+ *                 type: string
+ *                 example: "a9514cc2-a619-4d46-9c02-0fa0804d8d6e"
+ *               role:
+ *                 type: string
+ *                 example: "member"
+ *     responses:
+ *       200:
+ *         description: Member added to group
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 group:
+ *                   type: object
+ *                   example:
+ *                     id: "some-id"
+ *                     group_id: "b522524a-b36d-4e22-837f-bd02b9405379"
+ *                     user_id: "a9514cc2-a619-4d46-9c02-0fa0804d8d6e"
+ *                     role: "member"
+ *                     created_at: "2025-11-15T19:04:47.744Z"
+ *       500:
+ *         description: Error creating group member
+ */
