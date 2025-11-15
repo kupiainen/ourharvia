@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	Droplet,
 	Fan,
 	Lightbulb,
-	Menu,
-	MoreVertical,
 	Power,
+	User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -14,85 +15,95 @@ export const Route = createFileRoute("/mobile")({
 });
 
 function RouteComponent() {
-	// Main container mimics the phone screen
 	return (
-		<div className="w-full h-screen bg-black text-white flex flex-col items-center p-4 pt-8 max-w-[390px] mx-auto">
-			{/* Header */}
-			<header className="flex justify-between items-center w-full">
-				<Button
-					variant="ghost"
-					size="icon"
-					className="text-white hover:text-white hover:bg-neutral-800"
-				>
-					<Menu className="w-6 h-6" />
-				</Button>
-				<div className="flex items-center gap-1 cursor-pointer">
-					<span className="text-lg font-semibold">My sauna</span>
-					<ChevronDown className="w-5 h-5 text-white/ Enabling this setting will require contributors to sign off on commits made through GitHub’s web interface. Signing off is a way for contributors to affirm that their commit complies with the repository's terms, commonly the Developer Certificate of Origin (DCO). Learn more about signing off on commits. 70" />
-				</div>
-				<Button
-					variant="ghost"
-					size="icon"
-					className="text-white hover:text-white hover:bg-neutral-800"
-				>
-					<MoreVertical className="w-6 h-6" />
-				</Button>
-			</header>
+		<div className="w-full h-screen bg-black text-white flex flex-col items-center p-4 pt-8 max-w-mobile mx-auto">
+			<main className="flex flex-col items-center justify-start flex-1 w-full mt-6">
+				{/* Control Dial with Chevrons */}
+				<div className="flex items-center justify-center w-full">
+					<button className="text-white/60 hover:text-white p-2 rounded-full bg-transparent">
+						<ChevronLeft size={32} />
+					</button>
 
-			{/* Main Content Area */}
-			<main className="flex flex-col items-center justify-start flex-1 w-full px-6 mt-10">
-				{/* Control Dial */}
-				{/* This uses a gradient p-2 "border" for the ring and a shadow for the glow */}
-				<div
-					className="w-64 h-64 rounded-full flex flex-col items-center justify-center relative 
-                     bg-gradient-to-br from-red-800 via-orange-700 to-yellow-600 p-2 
-                     shadow-[0_0_60px_10px_rgba(249,115,22,0.4)]"
-				>
-					{/* Inner black circle */}
-					<div className="w-full h-full rounded-full bg-black flex flex-col items-center justify-center">
-						<span className="text-7xl font-bold text-white tracking-tight">
-							45<span className="text-5xl align-top text-white/90">°C</span>
-						</span>
-						<span className="text-3xl text-white/70 mt-1">15%</span>
+          {/* Gradient ring control dial */}
+					<div
+						className="aspect-square w-64 h-64 rounded-full flex flex-col items-center justify-center relative
+                           bg-gradient-to-br from-orange-900 via-red-700 to-yellow-800 p-1
+                           shadow-[0_0_60px_10px_rgba(239,68,68,0.3)]"
+					>
+						{/* Inner circle with image/translucent bg */}
+						<div className="w-full h-full rounded-full bg-black/60 flex flex-col items-center justify-center relative overflow-hidden">
+							{/* Background Silhouette Placeholder */}
+							<User className="absolute -left-2 bottom-0 w-40 h-40 text-white/10" />
+
+							<span className="text-2xl">Mild</span>
+
+							<span className="num-light text-4xl text-white">
+								140
+								<span className="num-regular text-xl align-top text-white/80 font-normal">
+									°F
+								</span>
+							</span>
+
+							<div className="flex items-center gap-2 text-xl text-white/80 mt-2">
+								<Droplet className="w-5 h-5" />
+								<span className="num-regular text-md">40 %</span>
+							</div>
+							<span className="num-regular text-white/80 mt-1">1:30</span>
+						</div>
 					</div>
-					{/* Note: The yellow progress arc is omitted for simplicity, as it requires complex SVG or conic-gradients. */}
+
+					<button className="text-white/60 hover:text-white p-2 rounded-full bg-transparent">
+						<ChevronRight size={32} />
+					</button>
 				</div>
 
-				{/* Control Icons */}
-				<div className="flex gap-12 my-10">
+				{/* Control Icons & Dots */}
+				<div className="flex justify-between items-center w-full max-w-xs px-4 my-8">
 					<Button
 						variant="ghost"
 						size="icon"
-						className="text-yellow-500 hover:text-yellow-400 w-12 h-12"
+						className="text-white/40 hover:text-white w-10 h-10"
 					>
-						<Fan className="w-8 h-8" />
+						<Fan className="w-7 h-7" />
 					</Button>
+
+					<div className="flex items-center gap-2">
+						<div className="w-2 h-2 rounded-full bg-white"></div>
+						<div className="w-2 h-2 rounded-full bg-white/30"></div>
+						<div className="w-2 h-2 rounded-full bg-white/30"></div>
+						<div className="w-2 h-2 rounded-full bg-white/30"></div>
+					</div>
+
 					<Button
 						variant="ghost"
 						size="icon"
-						className="text-yellow-500 hover:text-yellow-400 w-12 h-12"
+						className="text-white/40 hover:text-white w-10 h-10"
 					>
-						<Lightbulb className="w-8 h-8" />
+						<Lightbulb className="w-7 h-7" />
 					</Button>
 				</div>
 
 				{/* Status Text */}
-				<p className="text-lg text-white">
-					Ready in <span className="font-bold">45 min</span>
+				<p className="text-center text-2xl text-white/70 mt-4">
+					Ready at{" "}
+					<span className="font-medium text-white">
+						<br />
+						08:41
+					</span>
 				</p>
 			</main>
 
-			{/* Footer */}
-			<footer className="flex justify-between items-center w-full p-6">
-				<p className="text-white/70 text-sm">Slide to stop</p>
-				<Button
-					size="icon"
-					className="rounded-full w-16 h-16 bg-orange-500 hover:bg-orange-600 
-                     shadow-lg shadow-orange-500/50 
-                     focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-black"
-				>
-					<Power className="w-8 h-8 text-white" />
-				</Button>
+			{/* Footer - Slide to Start */}
+			{/* This is a visual mock-up, not a functional slider */}
+			<footer className="flex justify-center items-center w-full p-6 mt-auto">
+				<div className="relative w-full max-w-[300px] h-16 bg-neutral-800 rounded-full flex items-center p-2">
+					<div className="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center flex-shrink-0">
+						<Power className="w-7 h-7 text-white" />
+					</div>
+					<span className="absolute left-1/2 -translate-x-1/2 text-neutral-400">
+						Slide to start <span className="font-sans ml-1">&rarr;</span>
+					</span>
+				</div>
 			</footer>
 		</div>
 	);
