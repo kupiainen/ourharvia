@@ -6,3 +6,4 @@
 > This project was created for the Junction 2025 hackathon as a non-commercial prototype.  
 > No official Harvia product, service, or representation is implied.
 
+> Backend integration branch backend-init
