@@ -11,6 +11,18 @@ importers:
       '@faker-js/faker':
         specifier: ^10.0.0
         version: 10.1.0
+      '@elevenlabs/elevenlabs-js':
+        specifier: ^2.24.1
+        version: 2.24.1   # (example — pnpm resolves the exact version)
+      '@elevenlabs/react':
+        specifier: ^0.11.0
+        version: 0.11.0
+      'elevenlabs':
+        specifier: ^1.59.0
+        version: 1.59.0
+      'uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       '@radix-ui/react-avatar':
         specifier: ^1.1.11
         version: 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
