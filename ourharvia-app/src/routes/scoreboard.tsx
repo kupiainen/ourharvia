@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -18,25 +18,6 @@ export const Route = createFileRoute('/scoreboard')({
 
 /* --- Data Interfaces & Static Data --- */
 
-interface Friend {
-  id: string
-  name: string
-  avatar: string
-  initials: string
-  wins: number
-  losses: number
-}
-
-interface LeaderboardUser {
-  rank: number
-  name: string
-  avatar: string
-  initials: string
-  totalTime: number
-  avgTemp: number
-  badgesEarned: number
-}
-
 interface AchievementBadge {
   id: string
   name: string
@@ -48,173 +29,171 @@ interface AchievementBadge {
   howToAchieve: string
 }
 
-/* --- Static Data --- */
-
-const friends: Friend[] = [
-  { id: '1', name: 'Alex Chen', avatar: '', initials: 'AC', wins: 12, losses: 8 },
-  { id: '2', name: 'Jordan Smith', avatar: '', initials: 'JS', wins: 15, losses: 5 },
-  { id: '3', name: 'Casey Lee', avatar: '', initials: 'CL', wins: 9, losses: 11 },
-  { id: '4', name: 'Morgan White', avatar: '', initials: 'MW', wins: 18, losses: 3 },
-]
-
-const leaderboardData: LeaderboardUser[] = [
-  { rank: 1, name: 'Morgan White', avatar: '', initials: 'MW', totalTime: 2840, avgTemp: 78, badgesEarned: 12 },
-  { rank: 2, name: 'Jordan Smith', avatar: '', initials: 'JS', totalTime: 2650, avgTemp: 76, badgesEarned: 10 },
-  { rank: 3, name: 'Alex Chen', avatar: '', initials: 'AC', totalTime: 2420, avgTemp: 75, badgesEarned: 9 },
-  { rank: 4, name: 'Casey Lee', avatar: '', initials: 'CL', totalTime: 2100, avgTemp: 74, badgesEarned: 7 },
-  { rank: 5, name: 'Your Profile', avatar: '', initials: 'YOU', totalTime: 1890, avgTemp: 73, badgesEarned: 8 },
-]
-
-const badges: AchievementBadge[] = [
-  {
-    id: '1',
-    name: 'Heat Master',
-    icon: <Flame className="w-6 h-6" />,
-    color: 'from-orange-500 to-red-600',
-    earned: true,
-    progress: 100,
-    description: 'Master of high temperatures',
-    howToAchieve: 'Reach an average session temperature of 80°C',
-  },
-  {
-    id: '2',
-    name: 'Iron Lung',
-    icon: <Wind className="w-6 h-6" />,
-    color: 'from-blue-500 to-cyan-600',
-    earned: true,
-    progress: 100,
-    description: 'High humidity warrior',
-    howToAchieve: 'Complete 5 sessions with 50%+ humidity',
-  },
-  {
-    id: '3',
-    name: 'Consistency King',
-    icon: <Trophy className="w-6 h-6" />,
-    color: 'from-yellow-500 to-amber-600',
-    earned: true,
-    progress: 100,
-    description: 'Never miss a streak',
-    howToAchieve: 'Visit 7 days in a row',
-  },
-  {
-    id: '4',
-    name: 'Stamina Beast',
-    icon: <Zap className="w-6 h-6" />,
-    color: 'from-purple-500 to-pink-600',
-    earned: false,
-    progress: 65,
-    description: 'Endurance champion',
-    howToAchieve: 'Complete 50 sauna sessions',
-  },
-  {
-    id: '5',
-    name: 'Speedrunner',
-    icon: <Clock className="w-6 h-6" />,
-    color: 'from-green-500 to-emerald-600',
-    earned: false,
-    progress: 42,
-    description: 'Quick session specialist',
-    howToAchieve: 'Complete 20 sessions under 15 minutes',
-  },
-  {
-    id: '6',
-    name: 'Ice Mage',
-    icon: <Medal className="w-6 h-6" />,
-    color: 'from-cyan-500 to-blue-600',
-    earned: false,
-    progress: 28,
-    description: 'Cold plunge expert',
-    howToAchieve: 'Complete 10 cold plunges',
-  },
-]
-
-const socialStats = [
-  {
-    title: 'Most Late-Night Sessions',
-    name: 'Morgan White',
-    initials: 'MW',
-    stat: '42 sessions after 9 PM',
-    icon: <Clock className="w-8 h-8" />,
-  },
-  {
-    title: 'Most Sauna Selfies',
-    name: 'Alex Chen',
-    initials: 'AC',
-    stat: '28 photos',
-    icon: <Smile className="w-8 h-8" />,
-  },
-  {
-    title: 'Most Talkative',
-    name: 'Jordan Smith',
-    initials: 'JS',
-    stat: '156 minutes of chat',
-    icon: <Heart className="w-8 h-8" />,
-  },
-  {
-    title: 'Earliest Riser',
-    name: 'Casey Lee',
-    initials: 'CL',
-    stat: '5:30 AM average start',
-    icon: <TrendingUp className="w-8 h-8" />,
-  },
-  {
-    title: 'Sweatiest Human',
-    name: 'Morgan White',
-    initials: 'MW',
-    stat: '98.6°F peak temp',
-    icon: <Flame className="w-8 h-8" />,
-  },
-  {
-    title: 'Sauna Tourist',
-    name: 'Jordan Smith',
-    initials: 'JS',
-    stat: 'Avg 8 min sessions',
-    icon: <Target className="w-8 h-8" />,
-  },
-]
-
-/* --- FIXED COMPONENT --- */
-
 function RouteComponent() {
-  const [selectedFriend, setSelectedFriend] = useState<Friend>(friends[0])
-  const [timeFilter, setTimeFilter] = useState('week')
-  const [selectedBadge, setSelectedBadge] = useState<AchievementBadge | null>(null)
-  const [currentTab, setCurrentTab] = useState("1v1")
-  const [sortBy, setSortBy] = useState("time");
+    const [selectedFriend, setSelectedFriend] = useState<any>(null);
+    const [timeFilter, setTimeFilter] = useState("week");
+    const [selectedBadge, setSelectedBadge] = useState<AchievementBadge | null>(null);
+    const [currentTab, setCurrentTab] = useState("1v1");
+    const [sortBy, setSortBy] = useState("time");
+    const [users, setUsers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
   
-  const currentUser = {
-    name: 'Your Profile',
-    avatar: '',
-    initials: 'YOU',
-    stats: {
-      totalSessions: 42,
-      avgDuration: 28,
-      avgTemp: 73,
-      avgHumidity: 55,
-      longestSession: 45,
-      thisWeek: 6,
-    },
-  }
-
-  const friendStats = {
-    totalSessions: 38,
-    avgDuration: 26,
-    avgTemp: 75,
-    avgHumidity: 58,
-    longestSession: 42,
-    thisWeek: 5,
-  }
-
-  const sortedLeaderboard = [...leaderboardData].sort((a, b) => {
-    switch (sortBy) {
-      case "temp":
-        return b.avgTemp - a.avgTemp;
-      case "badges":
-        return b.badgesEarned - a.badgesEarned;
-      default:
-        return b.totalTime - a.totalTime; // "time"
+    // TEMP – replace later with auth
+    const CURRENT_USER_ID = "a9514cc2-a619-4d46-9c02-0fa0804d8d6e";
+  
+    /* -----------------------------
+        Load All Users From Backend
+    ------------------------------*/
+    useEffect(() => {
+      async function loadUsers() {
+        try {
+          const res = await fetch("https://ourharvia-1.onrender.com/users/user_stats_all");
+          const data = await res.json();
+          console.log(data)
+  
+          // Convert backend → frontend structure
+          const mapped = data.map((u: any, index: number) => ({
+            id: u.user_id,
+            name: u.full_name ?? "Unknown User",
+            initials:
+              (u.full_name?.split(" ").map((x: string) => x[0]).join("") || "UU").toUpperCase(),
+            avatar: "",
+            totalSessions: u.total_sessions ?? 0,
+            totalTime: u.total_time_minutes ?? 0,
+            avgTemp: u.average_temperature ?? 0,
+            avgDuration: u.average_duration_minutes ?? 0,
+            badgesEarned: u.badges_earned ?? 0, // backend may add later
+            rank: index + 1,
+            raw: u,
+          }));
+  
+          setUsers(mapped);
+  
+          // Pre-select first opponent (NOT the current user)
+          const firstOpponent = mapped.find((u) => u.id !== CURRENT_USER_ID);
+          setSelectedFriend(firstOpponent ?? null);
+  
+        } catch (err) {
+          console.error("Failed to load users:", err);
+        } finally {
+          setLoading(false);
+        }
+      }
+  
+      loadUsers();
+    }, []);
+  
+    /* -----------------------------
+          Current User Data
+    ------------------------------*/
+    const currentUser = users.find((u) => u.id === CURRENT_USER_ID);
+  
+    if (!currentUser || loading) {
+      return <div className="text-white p-6">Loading...</div>;
     }
-  });
+  
+    /* -----------------------------
+          Opponents (All Except You)
+    ------------------------------*/
+    const opponents = users.filter((u) => u.id !== CURRENT_USER_ID);
+  
+    /* -----------------------------
+          Friend Stats (Selected Opponent)
+    ------------------------------*/
+    const friendStats = selectedFriend
+      ? {
+          totalSessions: selectedFriend.totalSessions,
+          avgDuration: selectedFriend.avgDuration,
+          avgTemp: selectedFriend.avgTemp,
+          avgHumidity: selectedFriend.raw?.average_humidity ?? 0,
+          longestSession: selectedFriend.raw?.longest_session_minutes ?? 0,
+          thisWeek: 0, // backend doesn't track yet
+        }
+      : null;
+  
+    /* -----------------------------
+           Sorted Leaderboard
+    ------------------------------*/
+    const sortedLeaderboard = [...users]
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "temp":
+            return b.avgTemp - a.avgTemp;
+          case "badges":
+            return b.badgesEarned - a.badgesEarned;
+          default:
+            return b.totalTime - a.totalTime; // "time"
+        }
+      })
+      .map((u, index) => ({ ...u, rank: index + 1 }));
+  
+    /* -----------------------------
+            Static Social Stats
+    ------------------------------*/
+
+    /* -----------------------------
+      GENERATED SOCIAL STATS
+------------------------------*/
+function generateSocialStats(users: any[]) {
+    if (!users.length) return [];
+  
+    // Helper to find user with max value in field
+    const maxUser = (field: string) =>
+      users.reduce((a, b) => (b[field] > a[field] ? b : a));
+  
+    const topTemp = maxUser("avgTemp");
+    const topSessions = maxUser("totalSessions");
+    const topMinutes = maxUser("totalTime");
+    const topDuration = maxUser("avgDuration");
+    const topStreak = maxUser("raw")?.raw?.longest_streak_days
+      ? users.reduce((a, b) =>
+          (b.raw?.longest_streak_days ?? 0) >
+          (a.raw?.longest_streak_days ?? 0)
+            ? b
+            : a
+        )
+      : null;
+  
+    return [
+      {
+        title: "Heat Lover",
+        name: topTemp.name,
+        initials: topTemp.initials,
+        stat: `${topTemp.avgTemp}°C avg temp`,
+        icon: <Flame className="w-8 h-8" />,
+      },
+      {
+        title: "Session Beast",
+        name: topSessions.name,
+        initials: topSessions.initials,
+        stat: `${topSessions.totalSessions} total sessions`,
+        icon: <Trophy className="w-8 h-8" />,
+      },
+      {
+        title: "Time Machine",
+        name: topMinutes.name,
+        initials: topMinutes.initials,
+        stat: `${topMinutes.totalTime} min spent`,
+        icon: <Clock className="w-8 h-8" />,
+      },
+      {
+        title: "Slow Burner",
+        name: topDuration.name,
+        initials: topDuration.initials,
+        stat: `${topDuration.avgDuration} min avg duration`,
+        icon: <Zap className="w-8 h-8" />,
+      },
+      topStreak && {
+        title: "Streak King",
+        name: topStreak.name,
+        initials: topStreak.initials,
+        stat: `${topStreak.raw?.longest_streak_days ?? 0} day streak`,
+        icon: <TrendingUp className="w-8 h-8" />,
+      },
+    ].filter(Boolean); // remove nulls
+  }
+
+  const socialStats = generateSocialStats(users);
 
   return (
     <div className="min-h-screen bg-[#050507] text-foreground">
@@ -281,7 +260,7 @@ function RouteComponent() {
                 <CardTitle className="text-lg">Select Opponent</CardTitle>
             </CardHeader>
             <CardContent className="space-y-1.5">
-                {friends.map((friend) => (
+              {opponents.map((friend) => (
                 <Button
                     key={friend.id}
                     variant="ghost"
@@ -289,7 +268,7 @@ function RouteComponent() {
                     className={`
                     w-full justify-start gap-3 rounded-lg border
                     ${
-                        selectedFriend.id === friend.id
+                        selectedFriend?.id === friend.id
                         ? "border-[#e58b0d] bg-[#e58b0d]/10"
                         : "border-transparent hover:bg-[#2b2b2f]"
                     }
@@ -337,7 +316,8 @@ function RouteComponent() {
                         </AvatarFallback>
                     </Avatar>
                     <h3 className="font-semibold text-white">{selectedFriend.name}</h3>
-                    <p
+                    <p className="text-xs text-blue-500 mt-0.5">Opponent</p>
+                    {/* <p
                         className={`text-xs font-bold mt-0.5 ${
                         selectedFriend.wins > selectedFriend.losses
                             ? "text-green-400"
@@ -345,7 +325,7 @@ function RouteComponent() {
                         }`}
                     >
                         {selectedFriend.wins}W - {selectedFriend.losses}L
-                    </p>
+                    </p> */}
                     </div>
                 </CardContent>
                 </Card>
@@ -358,49 +338,68 @@ function RouteComponent() {
             </CardHeader>
 
             <CardContent className="space-y-2">
-                {[
-                { label: 'Total Sessions', your: currentUser.stats.totalSessions, friend: friendStats.totalSessions },
-                { label: 'Avg Duration (min)', your: currentUser.stats.avgDuration, friend: friendStats.avgDuration },
-                { label: 'Avg Temperature (°C)', your: currentUser.stats.avgTemp, friend: friendStats.avgTemp },
-                { label: 'Avg Humidity (%)', your: currentUser.stats.avgHumidity, friend: friendStats.avgHumidity },
-                { label: 'Longest Session (min)', your: currentUser.stats.longestSession, friend: friendStats.longestSession },
-                { label: "This Week's Sessions", your: currentUser.stats.thisWeek, friend: friendStats.thisWeek },
-                ].map((stat, idx) => {
-                const yourIsBigger = stat.your > stat.friend
-                return (
-                    <div
-                    key={idx}
-                    className="flex items-center justify-between px-3 py-2 rounded-md bg-[#2b2b2f]/60"
+            {[
+            {
+                label: "Total Sessions",
+                your: currentUser.totalSessions,
+                friend: friendStats.totalSessions,
+            },
+            // {
+            //     label: "Total Time (min)",
+            //     your: currentUser.totalTime,
+            //     friend: friendStats.totalTime,
+            // },
+            {
+                label: "Avg Temperature (°C)",
+                your: currentUser.avgTemp,
+                friend: friendStats.avgTemp,
+            },
+            {
+                label: "Avg Duration (min)",
+                your: currentUser.avgDuration,
+                friend: friendStats.avgDuration,
+            },
+            {
+                label: "Longest Streak (days)",
+                your: currentUser.raw.longest_streak_days ?? 0,
+                friend: selectedFriend.raw?.longest_streak_days ?? 0,
+            },
+            ].map((stat, idx) => {
+            const yourIsBigger = stat.your > stat.friend;
+            return (
+                <div
+                key={idx}
+                className="flex items-center justify-between px-3 py-2 rounded-md bg-[#2b2b2f]/60"
+                >
+                <span className="text-sm text-white/60">{stat.label}</span>
+
+                <div className="flex gap-6">
+                    <span
+                    className={`
+                        text-[#e58b0d]
+                        ${yourIsBigger ? "font-bold" : "font-normal"}
+                    `}
                     >
-                    <span className="text-sm text-white/60">{stat.label}</span>
+                    {stat.your}
+                    </span>
 
-                    <div className="flex gap-6">
-                        <span
-                        className={`
-                            text-[#e58b0d]
-                            ${yourIsBigger ? "font-bold" : "font-normal"}
-                        `}
-                        >
-                        {stat.your}
-                        </span>
-
-                        <span
-                        className={`
-                            text-blue-400
-                            ${!yourIsBigger ? "font-bold" : "font-normal"}
-                        `}
-                        >
-                        {stat.friend}
-                        </span>
-                    </div>
-                    </div>
-                )
-                })}
+                    <span
+                    className={`
+                        text-blue-400
+                        ${!yourIsBigger ? "font-bold" : "font-normal"}
+                    `}
+                    >
+                    {stat.friend}
+                    </span>
+                </div>
+                </div>
+            );
+            })}
             </CardContent>
             </Card>
 
             {/* Graph Preview */}
-            <Card className="bg-[#1a1a1d]/80 border border-[#2b2b2f]">
+            {/* <Card className="bg-[#1a1a1d]/80 border border-[#2b2b2f]">
                 <CardHeader className="pb-2">
                 <CardTitle className="text-lg text-white">Session Graphs</CardTitle>
                 </CardHeader>
@@ -410,7 +409,7 @@ function RouteComponent() {
                     Graph visualization coming soon
                 </div>
                 </CardContent>
-            </Card>
+            </Card> */}
             </div>
         </div>
         </TabsContent>
@@ -442,7 +441,6 @@ function RouteComponent() {
             <SelectContent className="bg-[#1a1a1d] border border-[#2b2b2f] text-white">
                 <SelectItem value="time">Total Time</SelectItem>
                 <SelectItem value="temp">Avg Temp</SelectItem>
-                <SelectItem value="badges">Badges</SelectItem>
             </SelectContent>
             </Select>
 
@@ -469,10 +467,6 @@ function RouteComponent() {
                         Avg Temp
                     </th>
 
-                    <th className={`px-2 py-2 text-left text-xs font-semibold 
-                        ${sortBy === "badges" ? "text-white font-bold" : "text-white/70"}`}>
-                        Badges
-                    </th>
                     </tr>
                 </thead>
 
@@ -499,14 +493,6 @@ function RouteComponent() {
                             {user.avgTemp}°C
                         </td>
 
-                        <td className="px-2 py-2">
-                            <Badge
-                            className={`bg-[#e58b0d]/20 border border-[#e58b0d]/40 text-[#e58b0d] text-xs px-2 
-                            ${sortBy === "badges" ? "font-bold text-[#fffff]" : "text-[#e58b0d]"}`}
-                            >
-                            {user.badgesEarned}
-                            </Badge>
-                        </td>
                         </tr>
                     );
                     })}
@@ -517,180 +503,6 @@ function RouteComponent() {
             </CardContent>
         </Card>
         </TabsContent>
-
-        {/* --- Badge Comparison Tab --- */}
-        {/* <TabsContent value="badges" className="space-y-8 mt-6 text-white"> */}
-
-        {/* -------- 1. Overall Badge Leaderboard -------- */}
-        {/* <Card className="bg-[#1a1a1d]/90 border border-[#2b2b2f] rounded-xl shadow-lg">
-            <CardHeader>
-            <CardTitle className="text-xl text-white flex items-center gap-2">
-                🏅 Badge Leaderboard
-            </CardTitle>
-            <CardDescription className="text-white/60">
-                See who has earned the most sauna achievements.
-            </CardDescription>
-            </CardHeader>
-
-            <CardContent className="p-0">
-            <table className="w-full text-white text-sm">
-                <thead>
-                <tr className="bg-[#232326] border-b border-[#2b2b2f]">
-                    <th className="px-4 py-3 text-left font-semibold text-white/70">Rank</th>
-                    <th className="px-4 py-3 text-left font-semibold text-white/70">User</th>
-                    <th className="px-4 py-3 text-left font-semibold text-white/70 whitespace-nowrap">Badges</th>
-                    <th className="px-4 py-3 text-left font-semibold text-white/70 whitespace-nowrap">Rare Badges</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {friends
-                    .map((f) => ({
-                    ...f,
-                    totalBadges: Math.floor(Math.random() * 12) + 3, // Fake demo data
-                    rareBadges: Math.floor(Math.random() * 4),
-                    }))
-                    .sort((a, b) => b.totalBadges - a.totalBadges)
-                    .map((f, idx) => (
-                    <tr
-                        key={f.id}
-                        className={`border-b border-[#2b2b2f] ${
-                        idx === 0 ? "bg-[#e58b0d]/10" : "bg-[#1a1a1d]"
-                        } hover:bg-[#232326] transition-colors`}
-                    >
-                        <td className="px-4 py-3 font-bold">{idx + 1}</td>
-                        <td className="px-4 py-3 flex items-center gap-3">
-                        <Avatar className="w-8 h-8">
-                            <AvatarFallback className="bg-blue-500 text-white text-xs font-bold">
-                            {f.initials}
-                            </AvatarFallback>
-                        </Avatar>
-                        {f.name}
-                        </td>
-                        <td className="px-4 py-3 font-semibold">{f.totalBadges}</td>
-                        <td className="px-4 py-3 font-semibold text-[#e58b0d]">{f.rareBadges}</td>
-                    </tr>
-                    ))}
-                </tbody>
-            </table>
-            </CardContent>
-        </Card> */}
-
-        {/* -------- 2. Category Dominance Cards -------- */}
-        {/* <div>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            🔥 Category Leaders
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-                { id: 'heat', label: 'Heat Mastery', icon: <Flame className="text-[#e58b0d] w-6 h-6" /> },
-                { id: 'consistency', label: 'Consistency', icon: <Trophy className="text-[#e58b0d] w-6 h-6" /> },
-                { id: 'cold', label: 'Cold Plunge', icon: <Wind className="text-[#e58b0d] w-6 h-6" /> },
-                { id: 'speed', label: 'Speedrunner', icon: <Zap className="text-[#e58b0d] w-6 h-6" /> },
-                { id: 'humidity', label: 'Humidity Warrior', icon: <Heart className="text-[#e58b0d] w-6 h-6" /> },
-                { id: 'stamina', label: 'Stamina Beast', icon: <Target className="text-[#e58b0d] w-6 h-6" /> },
-            ].map((cat) => {
-                const leader =
-                friends[Math.floor(Math.random() * friends.length)] // mock leader
-                const runner =
-                friends[Math.floor(Math.random() * friends.length)] // mock runner
-
-                return (
-                <Card key={cat.id} className="bg-[#1a1a1d] border border-[#2b2b2f] p-4 rounded-xl">
-                    <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-white">{cat.label}</h3>
-                    {cat.icon}
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-2">
-                    <Avatar className="w-9 h-9">
-                        <AvatarFallback className="bg-[#e58b0d] text-black text-xs font-bold">
-                        {leader.initials}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <p className="font-semibold text-sm">{leader.name}</p>
-                        <p className="text-xs text-[#e58b0d]">#1 in this category</p>
-                    </div>
-                    </div>
-
-                    <p className="text-xs text-white/50">
-                    Runner-up: <span className="text-blue-400">{runner.name}</span>
-                    </p>
-                </Card>
-                )
-            })}
-            </div>
-        </div> */}
-
-        {/* -------- 3. Rare Badge Highlights -------- */}
-        {/* <div>
-            <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
-            🌟 Rare Badges
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {badges
-                .filter((b) => b.earned === true)
-                .slice(0, 3)
-                .map((badge) => (
-                <Card
-                    key={badge.id}
-                    className="bg-gradient-to-br from-[#e58b0d]/20 to-transparent border border-[#2b2b2f] p-4 rounded-xl"
-                >
-                    <div className="flex flex-col items-center text-center gap-3">
-                    <div className="p-3 rounded-full bg-[#e58b0d]/20">{badge.icon}</div>
-
-                    <h3 className="font-bold">{badge.name}</h3>
-                    <p className="text-sm text-white/60">{badge.description}</p>
-                    </div>
-                </Card>
-                ))}
-            </div>
-        </div> */}
-
-        {/* -------- 4. Closest to Unlocking -------- */}
-        {/* <div>
-            <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
-            ⏳ Almost Earned
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {friends.slice(0, 4).map((friend) => {
-                const badge = badges[Math.floor(Math.random() * badges.length)] // demo placeholder
-                const progress = Math.floor(Math.random() * 80) + 10
-
-                return (
-                <Card key={friend.id} className="bg-[#1a1a1d] border border-[#2b2b2f] rounded-xl p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                    <Avatar className="w-9 h-9">
-                        <AvatarFallback className="bg-blue-500 text-white text-xs font-bold">
-                        {friend.initials}
-                        </AvatarFallback>
-                    </Avatar>
-
-                    <div>
-                        <p className="font-semibold">{friend.name}</p>
-                        <p className="text-xs text-white/50">Close to unlocking:</p>
-                    </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 rounded-full bg-[#e58b0d]/20">{badge.icon}</div>
-                    <span className="font-medium">{badge.name}</span>
-                    </div>
-
-                    <Progress value={progress} className="h-2" />
-                    <p className="text-xs text-white/60 mt-1">{progress}% complete</p>
-                </Card>
-                )
-            })}
-            </div>
-        </div>
-
-        </TabsContent> */}
-
 
         {/* Social Stats Tab */}
         <TabsContent value="social" className="space-y-6 mt-6">
