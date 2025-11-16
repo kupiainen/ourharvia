@@ -1,22 +1,25 @@
+# Base stage
 FROM node:24-slim AS base
-
-ENV PNPM_HOME="/ourharvia-app"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-
-FROM base AS build
 
 WORKDIR /usr/src/app
 COPY ourharvia-app/ .
 
+# Install dependencies using npm
+RUN npm install
+
+# Build stage
+FROM base AS build
+
+WORKDIR /usr/src/app
 ENV CI=true
 
-RUN --mount=type=cache,id=pnpm,target=${PNPM_HOME}/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm build
+RUN npm run build
 
+# Runtime stage
 FROM node:24-alpine3.20 AS runtime
 
-RUN npm i -g serve
+# Install serve globally
+RUN npm install -g serve
 
 WORKDIR /app
 COPY --from=build /usr/src/app/dist /app
