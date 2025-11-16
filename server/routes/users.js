@@ -1,5 +1,5 @@
 import express from "express";
-import {fetchUserStats, updateUserStats } from "../utils/sessionHelper.js";
+import {fetchUserStats, updateUserStats, fetchAllUserStats } from "../utils/sessionHelper.js";
 const router = express.Router();
 /**
  * @swagger
@@ -105,6 +105,16 @@ router.get("/user_stats/:user_id", async (req, res) => {
     try {
         const { user_id } = req.params;
         const stats = await fetchUserStats(user_id);
+        if (!stats) return res.status(404).json({ error: "No stats found for this user" });
+        res.json(stats);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.get("/user_stats_all", async (req, res) => {
+    try {
+        const stats = await fetchAllUserStats();
         if (!stats) return res.status(404).json({ error: "No stats found for this user" });
         res.json(stats);
     } catch (err) {

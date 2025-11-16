@@ -181,3 +181,12 @@ export async function fetchUserStats(userId) {
   if (error) throw error;
   return data;
 }
+
+export async function fetchAllUserStats() {
+  const { data, error } = await supabase
+    .from("user_stats")
+    .select("*")
+
+  if (error) throw error;
+  return data;
+}
