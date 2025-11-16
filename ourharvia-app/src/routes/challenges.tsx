@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Flame,
   Target,
@@ -41,156 +41,142 @@ interface Challenge {
   requirement?: string;
 }
 
+const allChallenges: Challenge[] = [
+  {
+    id: "1",
+    type: "personal",
+    title: "Heat Warrior",
+    description: "Reach 80°C average temperature",
+    progress: 65,
+    daysLeft: 5,
+    reward: { type: "badge", value: "50 XP" },
+    status: "active",
+    icon: Flame,
+    color: "#ff6b5b",
+    requirement: "Complete 5 sessions at 80°C+",
+  },
+  {
+    id: "2",
+    type: "1v1",
+    title: "Weekly Showdown",
+    description: "Compete against Jordan for total session time",
+    progress: 72,
+    daysLeft: 2,
+    reward: { type: "trophy", value: "Crown Badge" },
+    participants: [
+      { name: "You", initials: "YOU" },
+      { name: "Jordan", initials: "JOR" },
+    ],
+    status: "active",
+    icon: Users,
+    color: "#ffa500",
+    requirement: "Most total minutes wins",
+  },
+  {
+    id: "3",
+    type: "personal",
+    title: "Week Streak",
+    description: "Sauna 7 days in a row",
+    progress: 86,
+    daysLeft: 1,
+    reward: { type: "badge", value: "30 XP" },
+    status: "active",
+    icon: Calendar,
+    color: "#4169e1",
+    requirement: "Visit sauna daily for 7 days",
+  },
+  {
+    id: "4",
+    type: "group",
+    title: "Squad Goals",
+    description: "Your friend group's total minutes this month",
+    progress: 42,
+    daysLeft: 15,
+    reward: { type: "badge", value: "100 XP" },
+    participants: [
+      { name: "Alex", initials: "AL" },
+      { name: "Morgan", initials: "MO" },
+      { name: "Casey", initials: "CA" },
+    ],
+    status: "active",
+    icon: Trophy,
+    color: "#ffd700",
+    requirement: "Reach 500 combined minutes",
+  },
+  {
+    id: "5",
+    type: "personal",
+    title: "Speedrunner",
+    description: "10 sessions in one week",
+    progress: 40,
+    daysLeft: 7,
+    reward: { type: "badge", value: "25 XP" },
+    status: "available",
+    icon: Zap,
+    color: "#a78bfa",
+    requirement: "Complete 10 sessions within 7 days",
+  },
+  {
+    id: "6",
+    type: "community",
+    title: "Winter Endurance Challenge",
+    description: "App-wide event - Total sauna minutes",
+    progress: 28,
+    daysLeft: 30,
+    reward: { type: "badge", value: "200 XP" },
+    status: "available",
+    icon: Award,
+    color: "#06b6d4",
+    requirement: "Compete with 1000+ users",
+  },
+  {
+    id: "7",
+    type: "personal",
+    title: "Recovery Pro",
+    description: "Improve wellness score by 20 points",
+    progress: 100,
+    daysLeft: 0,
+    reward: { type: "badge", value: "40 XP" },
+    status: "completed",
+    icon: Heart,
+    color: "#ff69b4",
+    requirement: "Session recovery metrics",
+  },
+  {
+    id: "8",
+    type: "group",
+    title: "Consistency King",
+    description: "14-day streak",
+    progress: 100,
+    daysLeft: 0,
+    reward: { type: "badge", value: "60 XP" },
+    participants: [
+      { name: "Jesse", initials: "JH" },
+      { name: "Ismael", initials: "IA" },
+      { name: "Mahmud", initials: "MF" },
+    ],
+    status: "completed",
+    icon: Star,
+    color: "#34d399",
+    requirement: "Maintain 14-day streak",
+  },
+];
+
 export default function Challenges() {
   const [activeTab, setActiveTab] = useState("active");
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
-  const [challenges, setChallenges] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  function classifyChallenge(startDate, endDate) {
-    const now = new Date();
-  
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-  
-    // Compare using timestamps only
-    if (start.getTime() > now.getTime()) return "not_started";
-    if (end.getTime() < now.getTime()) return "completed";
-    return "active";
-  }
-  
-  useEffect(() => {
-    async function loadChallenges() {
-      try {
-        // 1. Fetch all challenges (static list)
-        const baseRes = await fetch(
-          "https://ourharvia-1.onrender.com/challenges/get_challenges"
-        );
-        const baseData = await baseRes.json();
-  
-        if (!Array.isArray(baseData.challenges)) {
-          console.error("Backend did NOT return challenges array:", baseData);
-          setChallenges([]);
-          return;
-        }
-  
-        // 2. Fetch user progress
-        const userRes = await fetch(
-          "https://ourharvia-1.onrender.com/challenges/get_challenges/4169d4ca-ca75-4122-8d9e-cd88de0721d2"
-        );
-        const userData = await userRes.json();
-  
-        const userProgressArray = Array.isArray(userData.data)
-          ? userData.data
-          : [];
-  
-        console.log("User progress array:", userProgressArray);
-  
-        // Convert array into fast lookup map
-        const progressMap = {};
-        userProgressArray.forEach((p) => {
-          progressMap[p.challenge_id] = p;
-        });
-  
-        // 3. Build final challenge objects
-        const mapped = baseData.challenges.map((c) => {
-          const user = progressMap[c.id]; // match backend challenge.id
-  
-          const status = user?.is_completed
-            ? "completed"
-            : classifyChallenge(c.start_date, c.end_date);
-  
-          return {
-            id: c.id,
-            title: c.title,
-            description: c.description,
-            type: c.challenge_type,
-            progress: user?.completion_percent ?? 0,
-            daysLeft: calcDaysLeft(c.start_date, c.end_date),
-            reward: {
-              type: "points",
-              value: `${c.reward_points} XP`,
-            },
-            status,
-            icon: getChallengeIcon(c.challenge_type),
-            color: getColorForDifficulty(c.difficulty_level),
-            requirement: formatRequirement(c),
-            badge_icon_url: c.badge_icon_url ?? c.badge_url,
-            difficulty: c.difficulty_level,
-          };
-        });
-  
-        setChallenges(mapped);
-      } catch (err) {
-        console.error("Failed to load challenges:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-  
-    loadChallenges();
-  }, []);
-  
   const tabs = [
     { id: "active", label: "Active", icon: Flame },
-    { id: "not_started", label: "Not Started", icon: Clock },
+    { id: "available", label: "Available", icon: Target },
     { id: "completed", label: "Completed", icon: CheckCircle2 },
   ];
 
-  const filteredChallenges = challenges.filter((c) => c.status === activeTab);
-  const activeChallenges = challenges.filter((c) => c.status === "active");
+  const filteredChallenges = allChallenges.filter((c) => c.status === activeTab);
+
+  const activeChallenges = allChallenges.filter((c) => c.status === "active");
   const activeChallengeCount = activeChallenges.length;
 
-  function calcDaysLeft(startDate: string, endDate: string) {
-    const now = new Date();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-  
-    // Starts in the future
-    if (start > now) {
-      const diff = start.getTime() - now.getTime();
-      return { type: "starts_in", days: Math.ceil(diff / (1000 * 60 * 60 * 24)) };
-    }
-  
-    // Already active → time left
-    const diff = end.getTime() - now.getTime();
-    return { type: "ends_in", days: Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24))) };
-  }  
-  
-  function getChallengeIcon(type: string) {
-    switch (type) {
-      case "personal": return Flame;
-      case "1v1": return Users;
-      case "group": return Trophy;
-      case "community": return Award;
-      default: return Target;
-    }
-  }
-  
-  function getColorForDifficulty(level: string) {
-    switch (level) {
-      case "easy": return "#34d399";   // green
-      case "medium": return "#ffa500"; // orange
-      case "hard": return "#c8102e";   // red
-      default: return "#999";
-    }
-  }
-  
-  function formatRequirement(c) {
-    if (c.target_sessions) return `${c.target_sessions} sessions required`;
-    if (c.target_duration_minutes) return `${c.target_duration_minutes} min of sauna total`;
-    if (c.target_temperature) return `${c.target_temperature}°C target`;
-    return null;
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading challenges...
-      </div>
-    );
-  }
-  
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#050507" }}>
       <div className="max-w-md mx-auto pb-8">
@@ -202,130 +188,155 @@ export default function Challenges() {
 
         {/* Page Navigation Icons */}
         <div className="px-4 relative -mt-6 mb-8">
-        <div className="flex justify-center gap-10">
+          <div className="flex justify-center gap-10">
             {tabs.map((tab) => {
-            const IconComponent = tab.icon;
-
-            return (
+              const IconComponent = tab.icon;
+              return (
                 <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className="w-14 h-14 rounded-full flex items-center justify-center transition-all transform hover:scale-110"
-                style={{
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="w-14 h-14 rounded-full flex items-center justify-center transition-all transform hover:scale-110"
+                  style={{
                     backgroundColor: activeTab === tab.id ? "#c8102e" : "#1a1a1d",
                     border: `2px solid ${activeTab === tab.id ? "#c8102e" : "#333"}`,
-                }}
+                  }}
                 >
-                <IconComponent
-                    className="w-6 h-6"
-                    style={{ color: activeTab === tab.id ? "#ffffff" : "#777" }}
-                />
+                  <IconComponent className="w-6 h-6" style={{ color: activeTab === tab.id ? "#ffffff" : "#777" }} />
                 </button>
-            );
+              );
             })}
+          </div>
         </div>
-        </div>
 
-        {/* Challenge Cards */}
-        {filteredChallenges.length > 0 ? (
-        <div className="space-y-3">
-            {filteredChallenges.map((challenge) => (
-            <button
-                key={challenge.id}
-                onClick={() => setSelectedChallenge(challenge)}
-                className="relative w-full text-left p-4 rounded-xl transition-all hover:scale-105"
-                style={{
-                backgroundColor: "#1a1a1d",
-                border: "1px solid rgba(255, 255, 255, 0.05)",
-                }}
-            >
-                {/* Challenge Type Badge */}
-                <div
-                className="absolute top-4 right-12 px-2 py-0.5 text-[10px] font-semibold rounded-full"
-                style={{
-                    backgroundColor: "#2a2a2d",
-                    color: challenge.color,
-                    border: `1px solid ${challenge.color}40`,
-                }}
-                >
-                {challenge.type.toUpperCase()}
-                </div>
+        {/* Content Sections */}
+        <div className="px-4 space-y-6">
+          {/* Active Challenges Count Header */}
+          {activeTab === "active" && (
+            <div className="text-center">
+              <h1 className="text-xl font-semibold text-white">
+                {activeChallengeCount} Active Challenge{activeChallengeCount !== 1 ? "s" : ""}
+              </h1>
+            </div>
+          )}
 
-                <div className="flex gap-3">
-                {/* Badge Image */}
-                <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-                    style={{ backgroundColor: `${challenge.color}20` }}
-                >
-                    <img
-                    src={challenge.badge_icon_url}
-                    alt={challenge.title}
-                    className="w-full h-full object-contain p-1"
-                    />
-                </div>
+          {activeTab === "available" && (
+            <div className="text-center">
+              <h1 className="text-xl font-semibold text-white">Available Challenges</h1>
+            </div>
+          )}
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-white truncate">
-                    {challenge.title} - {challenge.difficulty}
-                    </h3>
+          {activeTab === "completed" && (
+            <div className="text-center">
+              <h1 className="text-xl font-semibold text-white">Completed Challenges</h1>
+            </div>
+          )}
 
-                    <p style={{ color: "#999" }} className="text-xs mt-0.5 line-clamp-1">
-                    {challenge.description}
-                    </p>
-
-                    {/* Progress Bar */}
-                    <div className="mt-2">
+          {/* Challenge Cards */}
+          {filteredChallenges.length > 0 ? (
+            <div className="space-y-3">
+              {filteredChallenges.map((challenge) => {
+                const IconComponent = challenge.icon;
+                return (
+                  <button
+                    key={challenge.id}
+                    onClick={() => setSelectedChallenge(challenge)}
+                    className="relative w-full text-left p-4 rounded-xl transition-all hover:scale-105"
+                    style={{
+                      backgroundColor: "#1a1a1d",
+                      border: "1px solid rgba(255, 255, 255, 0.05)",
+                    }}
+                  >
+                    {/* Challenge Type Badge */}
                     <div
-                        className="w-full h-1.5 rounded-full"
-                        style={{ backgroundColor: "#2a2a2d" }}
+                      className="absolute top-4 right-12 px-2 py-0.5 text-[10px] font-semibold rounded-full"
+                      style={{
+                        backgroundColor: "#2a2a2d",
+                        color: challenge.color,
+                        border: `1px solid ${challenge.color}40`,
+                      }}
                     >
-                        <div
-                        className="h-full rounded-full transition-all"
+                      {challenge.type.toUpperCase()}
+                    </div>
+
+                    <div className="flex gap-3">
+                      {/* Icon */}
+                      <div
+                        className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{
-                            width: `${challenge.progress}%`,
-                            backgroundColor: challenge.color,
+                          backgroundColor: `${challenge.color}20`,
                         }}
-                        />
-                    </div>
-                    </div>
+                      >
+                        <IconComponent className="w-6 h-6" style={{ color: challenge.color }} />
+                      </div>
 
-                    {/* Meta */}
-                    <div className="flex items-center justify-between mt-2">
-                    <p className="text-xs font-medium text-white">
-                        {challenge.progress}% complete
-                    </p>
-                    {challenge.daysLeft.days > 0 && (
-                    <p style={{ color: "#999" }} className="text-xs">
-                        {challenge.daysLeft.type === "starts_in"
-                        ? `Starts in ${challenge.daysLeft.days} days`
-                        : `${challenge.daysLeft.days} days left`}
-                    </p>
-                    )}
-                    </div>
-                </div>
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-white truncate">{challenge.title}</h3>
+                        <p style={{ color: "#999" }} className="text-xs mt-0.5 line-clamp-1">
+                          {challenge.description}
+                        </p>
 
-                {/* Arrow */}
-                <ChevronRight
-                    className="w-5 h-5 self-center flex-shrink-0"
-                    style={{ color: "#777" }}
-                />
-                </div>
-            </button>
-            ))}
+                        {/* Progress Bar */}
+                        <div className="mt-2">
+                          <div className="w-full h-1.5 rounded-full" style={{ backgroundColor: "#2a2a2d" }}>
+                            <div
+                              className="h-full rounded-full transition-all"
+                              style={{
+                                width: `${challenge.progress}%`,
+                                backgroundColor: challenge.color,
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Meta */}
+                        <div className="flex items-center justify-between mt-2">
+                          <p className="text-xs font-medium text-white">{challenge.progress}% complete</p>
+                          {challenge.daysLeft > 0 && (
+                            <p style={{ color: "#999" }} className="text-xs">
+                              {challenge.daysLeft} days left
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Participants */}
+                        {challenge.participants && challenge.participants.length > 0 && (
+                          <div className="flex gap-1 mt-2">
+                            {challenge.participants.slice(0, 3).map((p, idx) => (
+                              <div
+                                key={idx}
+                                className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                                style={{
+                                  backgroundColor: idx === 0 ? "#c8102e" : "#2a2a2d",
+                                  border: "1px solid #1a1a1d",
+                                }}
+                              >
+                                {p.initials[0]}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Arrow */}
+                      <ChevronRight className="w-5 h-5 self-center flex-shrink-0" style={{ color: "#777" }} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Target className="w-12 h-12 mx-auto mb-3" style={{ color: "#555" }} />
+              <p className="text-white font-semibold">No challenges here yet</p>
+              <p style={{ color: "#999" }} className="text-sm mt-1">
+                {activeTab === "active" && "Ready for a challenge? Browse Available"}
+                {activeTab === "available" && "Join one to get started!"}
+                {activeTab === "completed" && "Complete challenges to see them here"}
+              </p>
+            </div>
+          )}
         </div>
-        ) : (
-        <div className="text-center py-12">
-            <Target className="w-12 h-12 mx-auto mb-3" style={{ color: "#555" }} />
-            <p className="text-white font-semibold">No challenges here yet</p>
-            <p style={{ color: "#999" }} className="text-sm mt-1">
-            {activeTab === "active" && "Ready for a challenge? Browse Available"}
-            {activeTab === "not_started" && "Join one to get started!"}
-            {activeTab === "completed" && "Complete challenges to see them here"}
-            </p>
-        </div>
-        )}
-        
 
         {/* Challenge Detail Modal */}
         {selectedChallenge && (
@@ -346,17 +357,7 @@ export default function Challenges() {
                     backgroundColor: `${selectedChallenge.color}20`,
                   }}
                 >
-                  <div
-                className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden"
-                style={{ backgroundColor: `${selectedChallenge.color}20` }}
-                >
-                <img
-                    src={selectedChallenge.badge_icon_url}
-                    alt={selectedChallenge.title}
-                    className="w-full h-full object-contain p-2"
-                />
-                </div>
-
+                  <selectedChallenge.icon className="w-8 h-8" style={{ color: selectedChallenge.color }} />
                 </div>
                 <div className="flex-1">
                   <h2 className="text-lg font-bold text-white">{selectedChallenge.title}</h2>
@@ -387,20 +388,16 @@ export default function Challenges() {
 
               {/* Details */}
               <div className="space-y-4 mb-6 pb-4 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
-              {selectedChallenge.daysLeft.days > 0 && (
-                <div className="flex items-center justify-between">
+                {selectedChallenge.daysLeft > 0 && (
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" style={{ color: "#999" }} />
-                    <span style={{ color: "#999" }} className="text-sm">
-                        {selectedChallenge.daysLeft.type === "starts_in"
-                        ? "Starts in"
-                        : "Time remaining"}
-                    </span>
+                      <Clock className="w-4 h-4" style={{ color: "#999" }} />
+                      <span style={{ color: "#999" }} className="text-sm">
+                        Time remaining
+                      </span>
                     </div>
-                    <p className="text-sm font-semibold text-white">
-                    {selectedChallenge.daysLeft.days} days
-                    </p>
-                </div>
+                    <p className="text-sm font-semibold text-white">{selectedChallenge.daysLeft} days</p>
+                  </div>
                 )}
 
                 <div className="flex items-center justify-between">

@@ -1,9 +1,9 @@
 'use client'
 
 import { createFileRoute } from '@tanstack/react-router'
-import { ChevronLeft, Settings, Flame, Star, Users, Calendar, Heart, Lock, AlertCircle, Zap, Trophy, Target, TrendingUp, Award, ChevronDown } from 'lucide-react';
+import { ChevronLeft, Settings, Flame, Star, Users, Calendar, Heart, Lock, AlertCircle, Zap, Trophy, Target, TrendingUp, Award, ChevronDown } from 'lucide-react'
+import { useState } from 'react'
 import saunaImage from '../images/sauna1.jpg'
-import { useEffect, useState } from 'react'
 
 export const Route = createFileRoute('/profile')({
   component: ProfilePage,
@@ -15,72 +15,17 @@ export default function ProfilePage() {
   const [showPrefs, setShowPrefs] = useState(false)
   const [showPrefsModal, setShowPrefsModal] = useState(false)
   const [editProfileModal, setEditProfileModal] = useState(false)
-  const [userData, setUserData] = useState(null)
 
   // User data with XP-based level system
-  // const user = {
-  //   name: 'Alex Miller',
-  //   location: 'Los Angeles, USA',
-  //   avatar: 'AM',
-  //   xp: 2850,
-  //   level: 5,
-  //   sessions: 27,
-  // }
-    
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const [userRes, badgeRes, sessionRes] = await Promise.all([
-          fetch("https://ourharvia-1.onrender.com/users/user_stats/4169d4ca-ca75-4122-8d9e-cd88de0721d2"),
-          fetch("https://ourharvia-1.onrender.com/badges/user/4169d4ca-ca75-4122-8d9e-cd88de0721d2/"),
-          fetch("https://ourharvia-1.onrender.com/session/get_sessions"),
-        ]);
-  
-        const userJson = await userRes.json();
-        const badgeJson = await badgeRes.json();
-        const sessionJson = await sessionRes.json();
-  
-        // merged object
-        const merged = {
-          ...userJson,
-          badges: badgeJson.badges,
-          sessions: sessionJson.sessions,
-        };
-  
-        console.log("Merged userData:", merged);
-        setUserData(merged);
-  
-      } catch (err) {
-        console.error("Failed to load profile data:", err);
-      }
-    }
-  
-    loadData();
-  }, []);
-  
-
-  if (!userData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading profile...
-      </div>
-    )
-  }
   const user = {
-    id: userData.user_id,
-    name: userData.full_name,
-    location: userData.location ?? "Not set",
-    avatar: userData.avatar_url, // or generate initials
-    xp: userData.user_exp,
-    sessions: userData.total_sessions,
+    name: 'Alex Miller',
+    location: 'Los Angeles, USA',
+    avatar: 'AM',
+    xp: 2850,
+    level: 5,
+    sessions: 27,
   }
 
-  const streak = {
-    current: userData.current_streak_days,
-    longest: userData.longest_streak_days,
-  }
-
-    
 // Calculate level from XP (every 500 XP = 1 level)
 const getLevelFromXP = (xp) => Math.floor(xp / 500) + 1
 const getNextLevelXP = (level) => level * 500
@@ -94,51 +39,108 @@ const nextLevelXP = getNextLevelXP(level)
 const progressToNextLevel =
   ((user.xp - currentLevelMinXP) / (nextLevelXP - currentLevelMinXP)) * 100
 
-  const badges = userData.badges || [];
-  console.log(userData.badges);
 
-  // Backend has no achievement count yet → treat all as achieved
-  const achievedBadges = badges;
-  const lockedBadges = [];
+  const streak = {
+    current: 4,
+    longest: 12,
+    lastSession: '3 hours ago',
+  }
 
-  const sessions = userData.sessions || [];
-  
+  const badges = [
+    {
+      id: 1,
+      name: 'Heat Hero',
+      icon: Flame,
+      description: 'Reach 10 sauna sessions',
+      achieved: 3,
+      requirement: 'Complete sauna sessions',
+      color: '#ff6b5b',
+    },
+    {
+      id: 2,
+      name: 'Consistency King',
+      icon: Calendar,
+      description: '7-day streak',
+      achieved: 2,
+      requirement: 'Maintain a 7-day streak',
+      color: '#ffa500',
+    },
+    {
+      id: 3,
+      name: 'Recovery Pro',
+      icon: Heart,
+      description: 'Improve wellness score by 20 points',
+      achieved: 1,
+      requirement: 'Complete recovery sessions',
+      color: '#ff69b4',
+    },
+    {
+      id: 4,
+      name: 'Speed Runner',
+      icon: Zap,
+      description: '10 sessions in one week',
+      achieved: 1,
+      requirement: 'Complete 10 sessions weekly',
+      color: '#ffd700',
+    },
+    {
+      id: 5,
+      name: 'Streak Master',
+      icon: Trophy,
+      description: '30-day streak',
+      achieved: 0,
+      requirement: 'Maintain a 30-day streak',
+      color: '#4169e1',
+    },
+    {
+      id: 6,
+      name: 'Century Club',
+      icon: Target,
+      description: '100 sauna sessions',
+      achieved: 0,
+      requirement: 'Complete 100 sessions',
+      color: '#9370db',
+    },
+  ]
 
-  // const recentSessions = [
-  //   {
-  //     id: 1,
-  //     date: "Mar 21",
-  //     duration: 14,
-  //     temperature: 78,
-  //     badgesEarned: [
-  //       { badgeId: 2 }, // Consistency King
-  //       { badgeId: 1 }, // Heat Hero
-  //     ],
-  //   },
-  //   {
-  //     id: 2,
-  //     date: "Mar 20",
-  //     duration: 12,
-  //     temperature: 75,
-  //     badgesEarned: [],
-  //   },
-  //   {
-  //     id: 3,
-  //     date: "Mar 19",
-  //     duration: 15,
-  //     temperature: 80,
-  //     badgesEarned: [],
-  //   },
-  //   {
-  //     id: 4,
-  //     date: "Mar 18",
-  //     duration: 13,
-  //     temperature: 76,
-  //     badgesEarned: [
-  //       { badgeId: 3 }, // Heat Hero
-  //     ],
-  //   },
-  // ]  
+  const achievedBadges = badges.filter((b) => b.achieved > 0)
+  const lockedBadges = badges.filter((b) => b.achieved === 0)
+
+  const recentSessions = [
+    {
+      id: 1,
+      date: "Mar 21",
+      duration: 14,
+      temperature: 78,
+      badgesEarned: [
+        { badgeId: 2 }, // Consistency King
+        { badgeId: 1 }, // Heat Hero
+      ],
+    },
+    {
+      id: 2,
+      date: "Mar 20",
+      duration: 12,
+      temperature: 75,
+      badgesEarned: [],
+    },
+    {
+      id: 3,
+      date: "Mar 19",
+      duration: 15,
+      temperature: 80,
+      badgesEarned: [],
+    },
+    {
+      id: 4,
+      date: "Mar 18",
+      duration: 13,
+      temperature: 76,
+      badgesEarned: [
+        { badgeId: 3 }, // Heat Hero
+      ],
+    },
+  ]  
   
   const wellnessData = {
     recovery: {
@@ -325,25 +327,43 @@ const progressToNextLevel =
           <div className="mt-6">
             <p className="text-sm font-medium text-white mb-4 text-center">Badges</p>
             <div className="grid grid-cols-3 gap-4">
-            {userData.badges.map((badge, index) => (
-              <button
-                key={index}
-                onClick={() => setSelectedBadge(badge)}
-                className="flex flex-col items-center cursor-pointer transition-transform hover:scale-110"
-              >
-              <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center">
-                <img
-                  src={badge.badge_url}
-                  alt={badge.badge_name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-                <p className="text-xs text-white mt-2 text-center leading-tight" style={{ maxWidth: '50px', minHeight: '32px' }}>
-                  {badge.badge_name.replace(/_/g, " ")}
-                </p>
-              </button>
-            ))}
-          </div>
+              {achievedBadges.map((badge) => {
+                const IconComponent = badge.icon
+                return (
+                  <button
+                    key={badge.id}
+                    onClick={() => setSelectedBadge(badge)}
+                    className="flex flex-col items-center cursor-pointer transition-transform hover:scale-110"
+                  >
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center"
+                      style={{
+                        background: `conic-gradient(${badge.color}, ${badge.color}dd, ${badge.color})`,
+                        padding: '2px',
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: '#1a1a1d' }}
+                      >
+                        <IconComponent
+                          className="w-6 h-6"
+                          style={{ color: badge.color }}
+                        />
+                      </div>
+                    </div>
+                    <p className="text-xs text-white mt-2 text-center leading-tight" style={{ maxWidth: '50px', minHeight: '32px' }}>
+                      {badge.name}
+                    </p>
+                    {badge.achieved > 0 && (
+                      <span className="text-xs font-bold mt-1" style={{ color: badge.color }}>
+                        ×{badge.achieved}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
 
             {lockedBadges.length > 0 && (
               <div className="mt-6">
@@ -406,121 +426,128 @@ const progressToNextLevel =
 
           {/* Badge detail modal */}
           {selectedBadge && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+            <div
+                className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
                 onClick={() => setSelectedBadge(null)}
             >
-              <div
-                className="w-72 p-6 rounded-2xl shadow-xl"
+                <div
+                className="w-72 p-6 rounded-2xl shadow-xl animate-scaleIn"
                 style={{ backgroundColor: '#1a1a1d', border: '1px solid rgba(255,255,255,0.1)' }}
                 onClick={(e) => e.stopPropagation()}
-              >
-                {/* Badge Image */}
+                >
+                {/* Badge icon */}
                 <div className="flex justify-center mb-4">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-[#1a1a1d] flex items-center justify-center">
-                  <img
-                    src={selectedBadge.badge_url}
-                    alt={selectedBadge.badge_name}
-                    className="w-full h-full object-contain p-1 scale-125"
-                  />
+                    <div
+                    className="w-20 h-20 rounded-full flex items-center justify-center"
+                    style={{
+                        background: `conic-gradient(${selectedBadge.color}, ${selectedBadge.color}dd, ${selectedBadge.color})`,
+                        padding: '3px',
+                    }}
+                    >
+                    <div
+                        className="w-full h-full rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: '#1a1a1d' }}
+                    >
+                        <selectedBadge.icon
+                        className="w-10 h-10"
+                        style={{ color: selectedBadge.color }}
+                        />
+                    </div>
+                    </div>
                 </div>
-              </div>
 
-                <h3 className="text-white text-lg font-bold text-center -mt-5">
-                  {selectedBadge.badge_name.replace(/_/g, " ")}
-                </h3>
+                {/* Badge name */}
+                <h3 className="text-white text-lg font-bold text-center">{selectedBadge.name}</h3>
+
+                {/* Earned count */}
+                <p className="text-center text-sm mt-1" style={{ color: '#999999' }}>
+                    Earned ×{selectedBadge.achieved}
+                </p>
+
+                <div className="border-t my-4" style={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+
+                {/* How to earn */}
+                <p
+                    className="text-xs uppercase tracking-wide text-center"
+                    style={{ color: '#999999' }}
+                >
+                    How to earn
+                </p>
+                <p className="text-center text-sm text-white mt-2">
+                    {selectedBadge.requirement}
+                </p>
 
                 <button
-                  className="w-full py-2 rounded-lg font-medium mt-6"
-                  style={{ backgroundColor: '#c8102e', color: 'white' }}
-                  onClick={() => setSelectedBadge(null)}
+                    className="w-full py-2 rounded-lg font-medium mt-5"
+                    style={{ backgroundColor: '#c8102e', color: 'white' }}
+                    onClick={() => setSelectedBadge(null)}
                 >
-                  Close
+                    Close
                 </button>
-              </div>
+                </div>
             </div>
-          )}
+            )}
         </div>
 
-      {/* SECTION 3: Recent Sessions */}
-      <div className="mx-4 mt-10">
+        {/* SECTION 3: Recent Sessions */}
+        <div className="mx-4 mt-10">
         <h2 className="text-base font-semibold text-white text-center">Recent sessions</h2>
 
         <div className="mt-4 grid grid-cols-2 gap-3">
-
-          {sessions.length === 0 && (
-            <p className="text-center text-gray-400 text-sm col-span-2">
-              No sessions recorded yet.
-            </p>
-          )}
-
-          {sessions.slice(0, 4).map((session) => {
-            const date = new Date(session.session_start)
-              .toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              });
-
-            return (
-              <div
+            {recentSessions.map((session) => (
+            <div
                 key={session.id}
                 className="p-3 rounded-xl text-center flex flex-col justify-between"
                 style={{
-                  backgroundColor: "#1a1a1d",
-                  border: "1px solid rgba(255, 255, 255, 0.05)",
-                  minHeight: "140px",
+                backgroundColor: '#1a1a1d',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                minHeight: '140px', // ensures consistent height
                 }}
-              >
+            >
                 {/* Date */}
-                <p style={{ color: "#999999" }} className="text-xs">
-                  {date}
+                <p style={{ color: '#999999' }} className="text-xs">
+                {session.date}
                 </p>
 
                 {/* Duration & temp */}
                 <p className="text-white text-sm font-semibold mt-2">
-                  {session.duration_minutes} min
+                {session.duration} min
+                </p>
+                <p style={{ color: '#999999' }} className="text-xs mt-1">
+                {session.temperature}°C
                 </p>
 
-                <p style={{ color: "#999999" }} className="text-xs mt-1">
-                {session.average_temperature > 0 ? (
-                  <>
-                    Average temp: <strong>{Math.round(session.average_temperature)}</strong>°C
-                  </>
-                ) : (
-                  "No temp data"
-                )}
-              </p>
-
-                <p style={{ color: "#999999" }} className="text-xs mt-1">
-                  {session.exp_gained > 0 ? (
-                    <>
-                      exp earned: <strong>{Math.round(session.exp_gained)}</strong> exp
-                    </>
-                  ) : (
-                    "No exp data"
-                  )}
-                </p>
-
-                <p style={{ color: "#999999" }} className="text-xs mt-1">
-                {session.humidity_percent > 0 ? (
-                  <>
-                    Humidity %: <strong>{Math.round(session.humidity_percent)}</strong> %
-                  </>
-                ) : (
-                  "No humidity data"
-                )}
-              </p>
-
-                {/* Badges Earned → backend does not have this yet */}
+                {/* Earned badges row */}
                 <div className="flex items-center justify-center gap-2 mt-3">
-                  {/* Placeholder spacing */}
-                  <div className="h-7 w-full" />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                {session.badgesEarned.slice(0, 3).map((earned, i) => {
+                    const badge = badges.find((b) => b.id === earned.badgeId)
+                    if (!badge) return null
+                    const Icon = badge.icon
 
+                    return (
+                    <button
+                        key={i}
+                        onClick={() => setSelectedBadge(badge)}
+                        className="w-7 h-7 rounded-full flex items-center justify-center transition-transform hover:scale-110"
+                        style={{
+                        backgroundColor: `${badge.color}22`,
+                        border: `1px solid ${badge.color}`,
+                        }}
+                    >
+                        <Icon className="w-4 h-4" style={{ color: badge.color }} />
+                    </button>
+                    )
+                })}
+
+                {/* keep spacing identical */}
+                {session.badgesEarned.length === 0 && (
+                    <div className="h-7 w-full" />
+                )}
+                </div>
+            </div>
+            ))}
+        </div>
+        </div>
 
         {/* SECTION 4: Wellness Data - Restructured based on Garmin report */}
         <div className="mx-4 mt-10">

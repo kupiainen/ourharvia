@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import "./dashboard.css";
 import saunaImage from "../images/sauna2.png";
 import { createAudioUrlFromText, getSpeechToken, parseTemperatureCommand } from "@/lib/tts";
+import { set } from "@elevenlabs/elevenlabs-js/core/schemas";
 import { useScribe } from "@elevenlabs/react";
 import { CommitStrategy } from "@elevenlabs/elevenlabs-js";
 export const Route = createFileRoute("/dashboard")({
