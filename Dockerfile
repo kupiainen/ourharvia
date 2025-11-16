@@ -12,7 +12,7 @@ COPY ourharvia-app/ .
 ENV CI=true
 
 RUN --mount=type=cache,id=pnpm,target=${PNPM_HOME}/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm unsafe-build
+RUN pnpm build
 
 FROM node:24-alpine3.20 AS runtime
 
