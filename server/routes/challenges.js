@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /challenges:
+ * /challenges/get_challenges:
  *   get:
  *     summary: Fetch all challenges with optional filtering by type
  *     tags: [Challenges]
@@ -53,7 +53,7 @@ const router = express.Router();
  */
 
 
-router.get("/", async (req, res) => {
+router.get("/get_challenges", async (req, res) => {
   try {
     const { type = "all" } = req.query;
 

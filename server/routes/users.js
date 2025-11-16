@@ -3,7 +3,7 @@ import {fetchUserStats, updateUserStats } from "../utils/sessionHelper.js";
 const router = express.Router();
 /**
  * @swagger
- * /user_stats/update/{user_id}:
+ * /users/user_stats/update/{user_id}:
  *   post:
  *     summary: Update cumulative stats for a user after a session
  *     tags: [UserStats]
@@ -69,7 +69,7 @@ router.post("/user_stats/update/:user_id", async (req, res) => {
 
 /**
  * @swagger
- * /user_stats/{user_id}:
+ * /users/user_stats/{user_id}:
  *   get:
  *     summary: Get cumulative stats for a user
  *     tags: [UserStats]

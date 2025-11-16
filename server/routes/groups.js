@@ -46,7 +46,7 @@ router.post("/create_group", async (req, res) => {
     }
 });
 
-router.post("/create_members", async (req, res) => {
+router.post("/add_members", async (req, res) => {
     try {
 
         // Insert into Supabase
@@ -81,7 +81,7 @@ export default router;
 
 /**
  * @swagger
- * /create_group:
+ * /groups/create_group:
  *   post:
  *     summary: Create a new group
  *     tags: [Groups]
@@ -120,7 +120,7 @@ export default router;
 
 /**
  * @swagger
- * /create_members:
+ * /groups/add_members:
  *   post:
  *     summary: Add a member to a group
  *     tags: [Groups]
