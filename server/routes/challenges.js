@@ -82,6 +82,29 @@ router.get("/get_challenges", async (req, res) => {
   }
 })
 
+router.get("/get_challenges/:user_id", async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    console.log("Fetching challenges for user:", user_id);
+    const { data, error } = await supabase
+      .from("challenge_progress")
+      .select("*")
+      .eq("user_id", user_id);
+
+    if (error) {
+      console.error("Error fetching challenges:", error)
+      console.log(error);
+      return res.status(500).json({ message: "Failed to fetch challenges" });
+    }
+
+    return res.status(200).json({
+      data
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+})
 
 /**
  * @swagger
@@ -173,7 +196,7 @@ router.get("/get_challenges", async (req, res) => {
 router.post("/:challengeId/activate", async (req, res) => {
   // Validate params
 
-    const { error: paramErr } = activateChallengeParamsSchema.validate(req.params);
+  const { error: paramErr } = activateChallengeParamsSchema.validate(req.params);
   if (paramErr) {
     return res.status(400).json({
       error: "INVALID_PARAMS",
