@@ -1,6 +1,0 @@
-{
-	"dependencies": {
-		"@elevenlabs/elevenlabs-js": "^2.24.1",
-		"@elevenlabs/react": "^0.11.0"
-	}
-}
