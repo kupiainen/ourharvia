@@ -309,3 +309,45 @@ router.post("/:challengeId/activate", async (req, res) => {
 
 
 export default router;
+
+/**
+ * @swagger
+ * /challenges/get_challenges/{user_id}:
+ *   get:
+ *     summary: Fetch progress for all challenges for a specific user
+ *     tags: [Challenges]
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: The user ID whose challenge progress will be retrieved
+ *     responses:
+ *       200:
+ *         description: Challenge progress retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     example:
+ *                       id: "c2f7e8d5-0a0b-45e0-bf33-8a1a8d9c3eaa"
+ *                       user_id: "4169d4ca-ca75-4122-8d9e-cd88de0721d2"
+ *                       challenge_id: "7a8e4f1b-6f10-4ee3-8b7c-1df8b1c8b3a1"
+ *                       is_activated: true
+ *                       group_id: null
+ *                       joined_date: "2025-11-16T12:00:00.000Z"
+ *                       updated_at: "2025-11-16T12:00:00.000Z"
+ *                       sessions_completed: 2
+ *                       completion_percent: 28
+ *       404:
+ *         description: No challenge progress found for this user
+ *       500:
+ *         description: Server error while fetching challenge progress
+ */

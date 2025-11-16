@@ -111,6 +111,59 @@ router.get("/user_stats/:user_id", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+/**
+ * @swagger
+ * /users/user_stats_all:
+ *   get:
+ *     summary: Get cumulative stats for all users
+ *     tags: [UserStats]
+ *     responses:
+ *       200:
+ *         description: List of all user statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     format: uuid
+ *                   user_id:
+ *                     type: string
+ *                     format: uuid
+ *                   total_sessions:
+ *                     type: integer
+ *                   total_time_minutes:
+ *                     type: integer
+ *                   average_temperature:
+ *                     type: number
+ *                   user_exp:
+ *                     type: integer
+ *                   last_session_date:
+ *                     type: string
+ *                     format: date-time
+ *             example:
+ *               - id: "c2f7e8d5-0a0b-45e0-bf33-8a1a8d9c3eaa"
+ *                 user_id: "4169d4ca-ca75-4122-8d9e-cd88de0721d2"
+ *                 total_sessions: 5
+ *                 total_time_minutes: 150
+ *                 average_temperature: 72.3
+ *                 user_exp: 30
+ *                 last_session_date: "2025-11-15T19:04:47.744Z"
+ *               - id: "9f2a1e7c-02c1-49e6-9a1d-1234abcd5678"
+ *                 user_id: "7d8c0dff-36bb-4220-b1cd-e693b2fd0b11"
+ *                 total_sessions: 2
+ *                 total_time_minutes: 60
+ *                 average_temperature: 68.0
+ *                 user_exp: 12
+ *                 last_session_date: "2025-11-14T18:04:47.744Z"
+ *       404:
+ *         description: No user stats found
+ *       500:
+ *         description: Internal server error
+ */
 
 router.get("/user_stats_all", async (req, res) => {
     try {
