@@ -1,4 +1,3 @@
-# --- Base image with pnpm and corepack ---
 FROM node:24-slim AS base
 
 ENV PNPM_HOME="/ourharvia-app"
